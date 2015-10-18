@@ -5,6 +5,7 @@ import android.content.Context;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 
 public class AlarmRealmManager implements AlarmManager {
@@ -12,6 +13,8 @@ public class AlarmRealmManager implements AlarmManager {
     private Realm mRealm;
 
     public AlarmRealmManager(Context context) {
+//        RealmConfiguration config = new RealmConfiguration.Builder(context).build();
+//        Realm.deleteRealm(config);
         mRealm = Realm.getInstance(context);
     }
 
@@ -27,36 +30,36 @@ public class AlarmRealmManager implements AlarmManager {
     }
 
     @Override
-    public void insert(String name, boolean completed) {
+    public void insert(Alarm data) {
         mRealm.beginTransaction();
         Alarm alarm = mRealm.createObject(Alarm.class);
-        alarm.setId((int)mRealm.where(Alarm.class).maximumInt("id") + 1);
-        alarm.setName(name);
-        alarm.setCompleted(completed);
+        alarm.setId((int) mRealm.where(Alarm.class).maximumInt("id") + 1);
+
+        alarm.setWhenHours(data.getWhenHours());
+        alarm.setWhenMinutes(data.getWhenMinutes());
+        alarm.setDisableComplexity(data.getDisableComplexity());
+        alarm.setRepeat(data.getRepeat());
+        alarm.setSnoozeInMinutes(data.getSnoozeInMinutes());
+        alarm.setIsEnabled(data.isEnabled());
+        alarm.setIsVibrate(data.isVibrate());
+        alarm.setSongId(data.getSongId());
+        alarm.setSongTitle(data.getSongTitle());
+        alarm.setSongBandName(data.getSongBandName());
+
         mRealm.commitTransaction();
     }
 
     @Override
-    public void update(int id, String name, boolean completed) {
+    public void update(Alarm alarm) {
         mRealm.beginTransaction();
-        Alarm alarm = find(id);
-        alarm.setName(name);
-        alarm.setCompleted(completed);
+        mRealm.copyToRealm(alarm);
         mRealm.commitTransaction();
     }
 
     @Override
-    public void update(Alarm alarm, String name) {
+    public void update(Alarm alarm, boolean isEnabled) {
         mRealm.beginTransaction();
-        alarm = mRealm.copyToRealm(alarm);
-        alarm.setName(name);
-        mRealm.commitTransaction();
-    }
-
-    @Override
-    public void update(Alarm alarm, boolean completed) {
-        mRealm.beginTransaction();
-        alarm.setCompleted(completed);
+        alarm.setIsEnabled(isEnabled);
         mRealm.commitTransaction();
     }
 

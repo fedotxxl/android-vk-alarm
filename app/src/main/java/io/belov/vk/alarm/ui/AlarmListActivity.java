@@ -97,7 +97,7 @@ public class AlarmListActivity extends BaseActivity {
     @OnItemClick(R.id.alarm_list_listview)
     void onItemClick(int position) {
         Alarm alarm = mAdapter.getItem(position);
-        mAlarmManager.update(alarm, !alarm.isCompleted());
+        mAlarmManager.update(alarm, !alarm.isEnabled());
         mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
     }
 

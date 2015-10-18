@@ -62,7 +62,7 @@ public class AlarmCreateActivity extends BaseActivity implements KeyEventEditTex
             int id = IntentUtils.getInt(intent, EXTRA_ID);
             if (id != 0) {
                 mAlarm = mAlarmManager.find(id);
-                mEditText.setText(mAlarm.getName());
+                mEditText.setText("234");
                 getSupportActionBar().setTitle(R.string.alarm_update);
             }
         }
@@ -112,10 +112,11 @@ public class AlarmCreateActivity extends BaseActivity implements KeyEventEditTex
 
     private void saveAlarm() {
         if (mAlarm == null) {
-            mAlarmManager.insert(mEditText.getText().toString(), false);
+            mAlarmManager.insert(getAlarmToInsert());
             mBus.post(new AlarmEvent(AlarmEvent.QUERY_INSERT));
         } else {
-            mAlarmManager.update(mAlarm, mEditText.getText().toString());
+            //, mEditText.getText().toString()
+            mAlarmManager.update(mAlarm);
             mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
         }
     }
@@ -139,5 +140,9 @@ public class AlarmCreateActivity extends BaseActivity implements KeyEventEditTex
         Intent intent = new Intent(this, AlarmListActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
+    }
+
+    private Alarm getAlarmToInsert() {
+        return new Alarm();
     }
 }

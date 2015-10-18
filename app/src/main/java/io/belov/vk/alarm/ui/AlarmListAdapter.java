@@ -35,9 +35,9 @@ public class AlarmListAdapter extends ArrayAdapter<Alarm> implements ListAdapter
         }
 
         Alarm alarm = getItem(position);
-        int textColor = alarm.isCompleted() ? R.color.myDisabledTextColor : R.color.myTextColor;
+        int textColor = alarm.isEnabled() ? R.color.myDisabledTextColor : R.color.myTextColor;
 
-        viewHolder.textView.setText(alarm.getName());
+        viewHolder.textView.setText("asd");
         viewHolder.textView.setTextColor(getContext().getResources().getColor(textColor));
 
         return convertView;
