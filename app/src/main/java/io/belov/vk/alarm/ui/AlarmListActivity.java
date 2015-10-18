@@ -13,6 +13,7 @@ import android.support.v4.util.Pair;
 
 import io.belov.vk.alarm.R;
 import io.belov.vk.alarm.bus.AlarmEvent;
+import io.belov.vk.alarm.bus.AlarmToggleEnabledEvent;
 import io.belov.vk.alarm.persistence.Alarm;
 import io.belov.vk.alarm.persistence.AlarmManager;
 import io.belov.vk.alarm.utils.IntentUtils;
@@ -26,7 +27,6 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.OnItemClick;
 import butterknife.OnItemLongClick;
 
@@ -52,7 +52,7 @@ public class AlarmListActivity extends BaseActivity {
         mBus.register(this);
 
         mList.addAll(mAlarmManager.findAll());
-        mAdapter = new AlarmListAdapter(this, mList);
+        mAdapter = new AlarmListAdapter(this, mList, mBus);
         mListView.setAdapter(mAdapter);
         mListView.setEmptyView(mEmptyTextView);
     }
@@ -107,7 +107,7 @@ public class AlarmListActivity extends BaseActivity {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Pair<View, String> pair =
-                    new Pair<>(view.findViewById(R.id.item_alarm_textview), getString(R.string.transition_name_alarm_name));
+                    new Pair<>(view.findViewById(R.id.item_alarm_when), getString(R.string.transition_name_alarm_name));
             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, pair);
 
             startActivity(AlarmCreateActivity.createIntent(this, alarm.getId()), options.toBundle());
@@ -127,5 +127,12 @@ public class AlarmListActivity extends BaseActivity {
         mList.clear();
         mList.addAll(mAlarmManager.findAll());
         mAdapter.notifyDataSetChanged();
+    }
+
+    @Subscribe
+    public void onAlarmToggleEnabledEvent(AlarmToggleEnabledEvent event) {
+        Alarm alarm = mAdapter.getItem(event.getPosition());
+        mAlarmManager.update(alarm, !alarm.isEnabled());
+        mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
     }
 }

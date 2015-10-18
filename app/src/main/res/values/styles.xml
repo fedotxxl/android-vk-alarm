@@ -28,4 +28,23 @@
         <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 
+    <style name="oval_button" parent="@android:style/Widget.Button">
+        <item name="android:background">@color/oval_selector</item>
+        <item name="android:textColor">@color/button_text_color</item>
+    </style>
+
+    <style name="circle_button" parent="@android:style/Widget.Button">
+        <item name="android:background">@color/circle_selector</item>
+        <item name="android:textColor">@color/button_text_color</item>
+    </style>
+
+    <style name="list_item_when">
+        <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:textSize">48sp</item>
+    </style>
+
+    <style name="list_item_repeat">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">18sp</item>
+    </style>
 </resources>

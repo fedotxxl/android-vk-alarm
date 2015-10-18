@@ -16,4 +16,14 @@
 
     <string name="transition_name_alarm_name">transition_name_alarm_name</string>
 
+    <string name="repeat_once">Once</string>
+    <string name="repeat_mo">Mo</string>
+    <string name="repeat_tu">Tu</string>
+    <string name="repeat_we">We</string>
+    <string name="repeat_th">Th</string>
+    <string name="repeat_fr">Fr</string>
+    <string name="repeat_sa">Sa</string>
+    <string name="repeat_su">Su</string>
+
+    <string name="icon_enabled">a</string>
 </resources>

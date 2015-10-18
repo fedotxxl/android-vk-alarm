@@ -59,6 +59,10 @@ public class Alarm extends RealmObject {
         public int getId() {
             return id;
         }
+
+        public boolean isSupportedBy(int repeats) {
+            return ((repeats & id) != 0);
+        }
     }
 
     //GET / SET

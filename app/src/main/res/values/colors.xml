@@ -16,6 +16,15 @@
     <color name="myHintTextColor">#B8B8B8</color>
     <color name="myDividerColor">#DADADA</color>
 
+    <color name="alarmItemEnabled">#FFF</color>
+    <color name="alarmItemEnabledInvert">#000044</color>
+    <color name="alarmItemDisabled">#727272</color>
+
+    <color name="alarmItemWhenEnabled">#FFF</color>
+    <color name="alarmItemWhenDisabled">#727272</color>
+    <color name="alarmItemRepeatEnabled">#FFF</color>
+    <color name="alarmItemRepeatDisabled">#727272</color>
+
     <drawable name="pressedGray">#0a000000</drawable>
     <drawable name="selectedGray">#14000000</drawable>
 
