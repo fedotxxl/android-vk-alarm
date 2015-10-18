@@ -1,16 +1,16 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/myPrimaryColor</item>
-        <item name="colorPrimaryDark">@color/myPrimaryDarkColor</item>
-        <item name="colorAccent">@color/myAccentColor</item>
-        <item name="android:textColorPrimary">@color/myTextPrimaryColor</item>
-        <item name="android:navigationBarColor" tools:ignore="NewAPI">@color/myNavigationColor</item>
-        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <!--<item name="colorPrimary">@color/myPrimaryColor</item>-->
+        <!--<item name="colorPrimaryDark">@color/myPrimaryDarkColor</item>-->
+        <!--<item name="colorAccent">@color/myAccentColor</item>-->
+        <!--<item name="android:textColorPrimary">@color/myTextPrimaryColor</item>-->
+        <!--<item name="android:navigationBarColor" tools:ignore="NewAPI">@color/myNavigationColor</item>-->
+        <!--<item name="drawerArrowStyle">@style/DrawerArrowStyle</item>-->
 
-        <item name="android:windowBackground">@color/myWindowBackground</item>
-        <item name="android:windowContentTransitions" tools:ignore="NewAPI">true</item>
+        <!--<item name="android:windowBackground">@color/myWindowBackground</item>-->
+        <!--<item name="android:windowContentTransitions" tools:ignore="NewAPI">true</item>-->
     </style>
 
     <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">

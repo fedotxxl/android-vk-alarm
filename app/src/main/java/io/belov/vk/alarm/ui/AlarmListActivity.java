@@ -72,9 +72,8 @@ public class AlarmListActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_delete:
-                mAlarmManager.deleteCompleted();
-                mBus.post(new AlarmEvent(AlarmEvent.QUERY_DELETE));
+            case R.id.action_add:
+                createAlaram();
                 break;
             case R.id.action_github:
                 IntentUtils.openUri(this, "https://github.com/rakuishi/Alarm-Android/");
@@ -90,10 +89,10 @@ public class AlarmListActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @OnClick(R.id.alarm_list_add_imagebutton)
-    void onClickInsertButton() {
-        startActivity(AlarmCreateActivity.createIntent(this));
-    }
+//    @OnClick(R.id.alarm_list_add_imagebutton)
+//    void onClickInsertButton() {
+//        createAlaram();
+//    }
 
     @OnItemClick(R.id.alarm_list_listview)
     void onItemClick(int position) {
@@ -117,6 +116,10 @@ public class AlarmListActivity extends BaseActivity {
         }
 
         return true;
+    }
+
+    private void createAlaram() {
+        startActivity(AlarmCreateActivity.createIntent(this));
     }
 
     @Subscribe

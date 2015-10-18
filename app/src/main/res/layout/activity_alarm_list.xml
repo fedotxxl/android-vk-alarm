@@ -24,18 +24,18 @@
             android:id="@+id/alarm_list_empty_view"
             layout="@layout/empty_view"/>
 
-        <ImageButton
-            android:id="@+id/alarm_list_add_imagebutton"
-            android:layout_width="@dimen/dp_56"
-            android:layout_height="@dimen/dp_56"
-            android:layout_gravity="right|bottom"
-            android:layout_marginBottom="@dimen/dp_16"
-            android:layout_marginRight="@dimen/dp_16"
-            android:tint="@android:color/white"
-            android:src="@drawable/ic_add"
-            android:background="@drawable/oval"
-            android:elevation="@dimen/floating_button_elevation"
-            android:stateListAnimator="@anim/oval_elevation"/>
+        <!--<ImageButton-->
+            <!--android:id="@+id/alarm_list_add_imagebutton"-->
+            <!--android:layout_width="@dimen/dp_56"-->
+            <!--android:layout_height="@dimen/dp_56"-->
+            <!--android:layout_gravity="right|bottom"-->
+            <!--android:layout_marginBottom="@dimen/dp_16"-->
+            <!--android:layout_marginRight="@dimen/dp_16"-->
+            <!--android:tint="@android:color/white"-->
+            <!--android:src="@drawable/ic_add"-->
+            <!--android:background="@drawable/oval"-->
+            <!--android:elevation="@dimen/floating_button_elevation"-->
+            <!--android:stateListAnimator="@anim/oval_elevation"/>-->
 
     </FrameLayout>
 
