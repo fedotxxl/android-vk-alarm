@@ -16,6 +16,8 @@ import io.belov.vk.alarm.persistence.AlarmManager;
 import io.belov.vk.alarm.utils.IntentUtils;
 import com.squareup.otto.Bus;
 
+import java.util.Random;
+
 import javax.inject.Inject;
 
 import static io.belov.vk.alarm.Config.EXTRA_ID;
@@ -143,6 +145,24 @@ public class AlarmCreateActivity extends BaseActivity implements KeyEventEditTex
     }
 
     private Alarm getAlarmToInsert() {
-        return new Alarm();
+        Random r = new Random();
+        Alarm alarm = new Alarm();
+
+        alarm.setIsEnabled(true);
+
+        alarm.setWhenHours(r.nextInt(24));
+        alarm.setWhenMinutes(r.nextInt(60));
+        alarm.setDisableComplexity(r.nextInt(3));
+        alarm.setRepeat(Alarm.Repeat.MO.getId() + Alarm.Repeat.WE.getId());
+        alarm.setSnoozeInMinutes(5);
+        alarm.setIsVibrate(r.nextBoolean());
+
+        if (r.nextBoolean()) {
+            alarm.setSongId("abc");
+            alarm.setSongTitle("Bohemian Rhapsody");
+            alarm.setSongBandName("The Queen");
+        }
+
+        return alarm;
     }
 }
