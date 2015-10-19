@@ -1,4 +1,5 @@
 <resources>
+    <integer name="com_vk_sdk_AppId">5112321</integer>
 
     <string name="app_name">VK Alarm</string>
 
