@@ -5,6 +5,9 @@
     package="io.belov.vk.alarm" >
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -68,6 +71,19 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name = ".alert.AlarmAlertActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <receiver android:name="io.belov.vk.alarm.alert.AlarmAlertBroadcastReceiver" />
+
+        <receiver android:name="io.belov.vk.alarm.alert.AlarmAlertBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

@@ -10,8 +10,10 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.support.v4.util.Pair;
+import android.widget.Toast;
 
 import io.belov.vk.alarm.R;
+import io.belov.vk.alarm.alert.AlarmAlertScheduler;
 import io.belov.vk.alarm.bus.AlarmEvent;
 import io.belov.vk.alarm.bus.AlarmToggleEnabledEvent;
 import io.belov.vk.alarm.persistence.Alarm;
@@ -37,9 +39,13 @@ public class AlarmListActivity extends BaseActivity {
     public static final String TAG = AlarmListActivity.class.getSimpleName();
     private AlarmListAdapter mAdapter;
     private List<Alarm> mList = new ArrayList<>();
+
     @Inject
     AlarmManager mAlarmManager;
-    @Inject Bus mBus;
+    @Inject
+    Bus mBus;
+    @Inject
+    AlarmAlertScheduler alertScheduler;
 
     @Bind(R.id.alarm_list_listview) ListView mListView;
     @Bind(R.id.alarm_list_empty_view) TextView mEmptyTextView;
@@ -101,9 +107,12 @@ public class AlarmListActivity extends BaseActivity {
 
     @OnItemClick(R.id.alarm_list_listview)
     void onItemClick(int position) {
-        Alarm alarm = mAdapter.getItem(position);
-        mAlarmManager.update(alarm, !alarm.isEnabled());
-        mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
+//        Alarm alarm = mAdapter.getItem(position);
+//        mAlarmManager.update(alarm, !alarm.isEnabled());
+//        mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
+
+//        alertScheduler.schedule(mAdapter.getItem(position));
+//        Toast.makeText(this, "Scheduled!", Toast.LENGTH_LONG).show();
     }
 
     @OnItemLongClick(R.id.alarm_list_listview)
@@ -143,6 +152,11 @@ public class AlarmListActivity extends BaseActivity {
 
     @Subscribe
     public void onAlarmToggleEnabledEvent(AlarmToggleEnabledEvent event) {
+
+        alertScheduler.schedule(mAdapter.getItem(event.getPosition()));
+        Toast.makeText(this, "Scheduled!", Toast.LENGTH_LONG).show();
+
+
         Alarm alarm = mAdapter.getItem(event.getPosition());
         mAlarmManager.update(alarm, !alarm.isEnabled());
         mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));

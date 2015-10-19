@@ -2,10 +2,13 @@ package io.belov.vk.alarm;
 
 import android.content.Context;
 
+import com.squareup.otto.Bus;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.belov.vk.alarm.alert.AlarmAlertScheduler;
 
 @Module
 public class AppModule {
@@ -19,5 +22,10 @@ public class AppModule {
     @Provides @Singleton
     public Context provideContext() {
         return app;
+    }
+
+    @Provides @Singleton
+    public AlarmAlertScheduler provideScheduler(Context context) {
+        return new AlarmAlertScheduler(context);
     }
 }
