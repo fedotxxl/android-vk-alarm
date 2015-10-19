@@ -31,11 +31,14 @@
     <style name="oval_button" parent="@android:style/Widget.Button">
         <item name="android:background">@color/oval_selector</item>
         <item name="android:textColor">@color/button_text_color</item>
+        <item name="android:layout_height">@dimen/btn_default</item>
     </style>
 
     <style name="circle_button" parent="@android:style/Widget.Button">
         <item name="android:background">@color/circle_selector</item>
         <item name="android:textColor">@color/button_text_color</item>
+        <item name="android:layout_width">@dimen/btn_default</item>
+        <item name="android:layout_height">@dimen/btn_default</item>
     </style>
 
     <style name="list_item_when">
@@ -56,5 +59,48 @@
         <item name="android:paddingRight">@dimen/activity_horizontal_margin</item>
         <item name="android:paddingTop">@dimen/activity_vertical_margin</item>
         <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="alarm_edit_repeat_button" parent="circle_button">
+        <item name="android:layout_marginLeft">@dimen/dp_4</item>
+        <item name="android:layout_marginRight">@dimen/dp_4</item>
+    </style>
+
+    <style name="alarm_edit_disable_complexity_button" parent="oval_button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/dp_8</item>
+        <item name="android:layout_marginRight">@dimen/dp_8</item>
+    </style>
+
+    <style name="alarm_edit_text">
+        <item name="android:fontFamily">sans-serif-thin</item>
+    </style>
+
+    <style name="alarm_edit_row">
+        <item name="android:layout_marginTop">@dimen/alarm_edit_vertical_margin</item>
+        <item name="android:layout_marginBottom">@dimen/alarm_edit_vertical_margin</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
+    </style>
+
+    <style name="alarm_edit_label" parent="alarm_edit_row">
+        <item name="android:layout_marginBottom">0dp</item>
+    </style>
+
+    <style name="alarm_edit_when" parent="alarm_edit_text">
+        <item name="android:textSize">56sp</item>
+        <item name="android:paddingTop">@dimen/alarm_edit_vertical_margin_x1.5</item>
+        <item name="android:paddingBottom">@dimen/alarm_edit_vertical_margin_x1.5</item>
+    </style>
+
+    <style name="alarm_edit_label_input" parent="alarm_edit_text">
+
+    </style>
+
+    <style name="alarm_edit_song_title" parent="alarm_edit_text">
+
+    </style>
+
+    <style name="alarm_edit_song_artist" parent="alarm_edit_text">
+
     </style>
 </resources>

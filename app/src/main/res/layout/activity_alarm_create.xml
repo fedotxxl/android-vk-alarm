@@ -1,15 +1,14 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <include
-        layout="@layout/toolbar"
         android:id="@+id/toolbar"
+        layout="@layout/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_56"/>
+        android:layout_height="@dimen/dp_56" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -18,21 +17,116 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:gravity="center">
 
-            <io.belov.vk.alarm.ui.KeyEventEditText
-                android:id="@+id/alarm_create_edittext"
-                android:transitionName="@string/transition_name_alarm_name"
+            <TextView
+                style="@style/alarm_edit_when"
+                android:id="@+id/alarm_edit_when"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="20:18" />
+
+            <EditText
+                style="@style/alarm_edit_label_input"
+                android:id="@+id/alarm_edit_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/alarm_edit_label"/>
+
+            <TextView
+                style="@style/alarm_edit_song_title"
+                android:id="@+id/alarm_edit_song_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Bohemian Rhapsody" />
+
+            <TextView
+                style="@style/alarm_edit_song_artist"
+                android:id="@+id/alarm_edit_song_artist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="The Queen"/>
+
+
+            <TextView
+                style="@style/alarm_edit_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/alarm_edit_disable_complexity"/>
+
+            <LinearLayout
+                style="@style/alarm_edit_row"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="@dimen/dp_48"
-                android:layout_marginTop="@dimen/dp_8"
-                android:layout_marginRight="@dimen/dp_16"
-                android:layout_marginLeft="@dimen/dp_16"
-                android:textAppearance="@style/MyTextAppearanceBody"
-                android:textColor="@color/myTextColor"
-                android:singleLine="true"
-                android:hint="@string/alarm"/>
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <Button
+                    style="@style/alarm_edit_disable_complexity_button"
+                    android:id="@+id/alarm_edit_disable_complexity_easy"
+                    android:text="@string/disable_complexity_easy" />
+
+                <Button
+                    style="@style/alarm_edit_disable_complexity_button"
+                    android:id="@+id/alarm_edit_disable_complexity_medium"
+                    android:text="@string/disable_complexity_medium" />
+
+                <Button
+                    style="@style/alarm_edit_disable_complexity_button"
+                    android:id="@+id/alarm_edit_disable_complexity_hard"
+                    android:text="@string/disable_complexity_hard" />
+            </LinearLayout>
+
+            <TextView
+                style="@style/alarm_edit_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/alarm_edit_repeat"/>
+
+            <LinearLayout
+                style="@style/alarm_edit_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <Button
+                    style="@style/alarm_edit_repeat_button"
+                    android:id="@+id/alarm_edit_repeat_mo"
+                    android:text="@string/repeat_mo" />
+
+                <Button
+                    style="@style/alarm_edit_repeat_button"
+                    android:id="@+id/alarm_edit_repeat_tu"
+                    android:text="@string/repeat_tu" />
+
+                <Button
+                    style="@style/alarm_edit_repeat_button"
+                    android:id="@+id/alarm_edit_repeat_we"
+                    android:text="@string/repeat_we" />
+
+                <Button
+                    style="@style/alarm_edit_repeat_button"
+                    android:id="@+id/alarm_edit_repeat_th"
+                    android:text="@string/repeat_th" />
+
+                <Button
+                    style="@style/alarm_edit_repeat_button"
+                    android:id="@+id/alarm_edit_repeat_fr"
+                    android:text="@string/repeat_fr" />
+
+                <Button
+                    style="@style/alarm_edit_repeat_button"
+                    android:id="@+id/alarm_edit_repeat_sa"
+                    android:text="@string/repeat_sa" />
+
+                <Button
+                    style="@style/alarm_edit_repeat_button"
+                    android:id="@+id/alarm_edit_repeat_su"
+                    android:text="@string/repeat_su" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

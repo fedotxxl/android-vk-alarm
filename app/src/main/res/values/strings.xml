@@ -27,5 +27,15 @@
     <string name="repeat_sa">Sa</string>
     <string name="repeat_su">Su</string>
 
+    <string name="disable_complexity_easy">Easy</string>
+    <string name="disable_complexity_medium">Medium</string>
+    <string name="disable_complexity_hard">Hard</string>
+
     <string name="icon_enabled">a</string>
+
+    <string name="alarm_edit_random">Random</string>
+    <string name="alarm_edit_label">Label</string>
+    <string name="alarm_edit_disable_complexity">Disable complexity</string>
+    <string name="alarm_edit_repeat">Repeat</string>
+
 </resources>

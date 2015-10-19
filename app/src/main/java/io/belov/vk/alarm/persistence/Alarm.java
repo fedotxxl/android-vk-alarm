@@ -45,6 +45,14 @@ public class Alarm extends RealmObject {
         DisableComplexity(int id) {
             this.id = id;
         }
+
+        public static DisableComplexity myValueOf(int id) {
+            for (DisableComplexity disableComplexity : values()) {
+                if (disableComplexity.id == id) return disableComplexity;
+            }
+
+            return null;
+        }
     }
 
     public enum Repeat {

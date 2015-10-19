@@ -7,12 +7,17 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import io.belov.vk.alarm.R;
 import io.belov.vk.alarm.bus.AlarmEvent;
 import io.belov.vk.alarm.persistence.Alarm;
 import io.belov.vk.alarm.persistence.AlarmManager;
+import io.belov.vk.alarm.utils.AlarmUtils;
 import io.belov.vk.alarm.utils.IntentUtils;
 import com.squareup.otto.Bus;
 
@@ -30,11 +35,52 @@ public class AlarmCreateActivity extends BaseAppCompatActivity implements KeyEve
     public static final String TAG = AlarmCreateActivity.class.getSimpleName();
     private Alarm mAlarm;
     private MenuItem mDoneMenuItem;
+
     @Inject
     AlarmManager mAlarmManager;
     @Inject Bus mBus;
 
-    @Bind(R.id.alarm_create_edittext) KeyEventEditText mEditText;
+    @Bind(R.id.alarm_edit_when)
+    TextView whenTextView;
+
+    @Bind(R.id.alarm_edit_label)
+    EditText labelEditText;
+
+    @Bind(R.id.alarm_edit_song_title)
+    TextView songTitleTextView;
+
+    @Bind(R.id.alarm_edit_song_artist)
+    TextView songArtistTextView;
+
+    @Bind(R.id.alarm_edit_disable_complexity_easy)
+    Button complexityEasyButton;
+
+    @Bind(R.id.alarm_edit_disable_complexity_medium)
+    Button complexityMediumButton;
+
+    @Bind(R.id.alarm_edit_disable_complexity_hard)
+    Button complexityHardButton;
+
+    @Bind(R.id.alarm_edit_repeat_mo)
+    Button repeatMoButton;
+
+    @Bind(R.id.alarm_edit_repeat_tu)
+    Button repeatTuButton;
+
+    @Bind(R.id.alarm_edit_repeat_we)
+    Button repeatWeButton;
+
+    @Bind(R.id.alarm_edit_repeat_th)
+    Button repeatThButton;
+
+    @Bind(R.id.alarm_edit_repeat_fr)
+    Button repeatFrButton;
+
+    @Bind(R.id.alarm_edit_repeat_sa)
+    Button repeatSaButton;
+
+    @Bind(R.id.alarm_edit_repeat_su)
+    Button repeatSuButton;
 
     public static Intent createIntent(Context context) {
         return new Intent(context, AlarmCreateActivity.class);
@@ -58,18 +104,18 @@ public class AlarmCreateActivity extends BaseAppCompatActivity implements KeyEve
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
-        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            mEditText.setText(IntentUtils.getQueryParameter(intent, "text"));
+
+        int id = IntentUtils.getInt(intent, EXTRA_ID);
+
+        if (id != 0) {
+            mAlarm = mAlarmManager.find(id);
         } else {
-            int id = IntentUtils.getInt(intent, EXTRA_ID);
-            if (id != 0) {
-                mAlarm = mAlarmManager.find(id);
-                mEditText.setText("234");
-                getSupportActionBar().setTitle(R.string.alarm_update);
-            }
+            mAlarm = new Alarm();
         }
 
-        mEditText.setKeyEventListener(this);
+        setupListeners();
+        setupUiFromAlarm(mAlarm);
+
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
     }
 
@@ -124,7 +170,7 @@ public class AlarmCreateActivity extends BaseAppCompatActivity implements KeyEve
     }
 
     private boolean enableToSave() {
-        return mEditText != null && !TextUtils.isEmpty(mEditText.getText().toString());
+        return true;
     }
 
     private void updateDoneMenuItem() {
@@ -134,6 +180,57 @@ public class AlarmCreateActivity extends BaseAppCompatActivity implements KeyEve
         } else {
             mDoneMenuItem.setEnabled(false);
             mDoneMenuItem.getIcon().setAlpha(127);
+        }
+    }
+
+    private void setupListeners() {
+
+    }
+
+    private void setupUiFromAlarm(Alarm alarm) {
+        whenTextView.setText(AlarmUtils.getWhenAsString(alarm));
+
+        setupUiSong(alarm);
+        setupUiDisableComplexity(alarm);
+    }
+
+    private void setupUiSong(Alarm alarm) {
+        String songTitle;
+        String songArtist;
+
+        if (alarm.getSongId() == null) {
+            songTitle = getString(R.string.alarm_edit_random);
+            songArtist = null;
+        } else {
+            songTitle = alarm.getSongTitle();
+            songArtist = alarm.getSongBandName();
+        }
+
+        songTitleTextView.setText(songTitle);
+
+        if (songArtist == null) {
+            songArtistTextView.setVisibility(View.GONE);
+        } else {
+            songArtistTextView.setVisibility(View.VISIBLE);
+            songArtistTextView.setText(songArtist);
+        }
+    }
+
+    private void setupUiDisableComplexity(Alarm alarm) {
+        Alarm.DisableComplexity disableComplexity = Alarm.DisableComplexity.myValueOf(alarm.getDisableComplexity());
+        Button[] buttons = new Button[] {complexityEasyButton, complexityMediumButton, complexityHardButton};
+        Button activeButton = null;
+
+        if (disableComplexity == Alarm.DisableComplexity.EASY) {
+            activeButton = complexityEasyButton;
+        } else if (disableComplexity == Alarm.DisableComplexity.MEDIUM) {
+            activeButton = complexityMediumButton;
+        } else if (disableComplexity == Alarm.DisableComplexity.HARD) {
+            activeButton = complexityHardButton;
+        }
+
+        for (Button button : buttons) {
+            button.setSelected(button == activeButton);
         }
     }
 
