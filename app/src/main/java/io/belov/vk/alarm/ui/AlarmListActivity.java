@@ -16,9 +16,11 @@ import io.belov.vk.alarm.bus.AlarmEvent;
 import io.belov.vk.alarm.bus.AlarmToggleEnabledEvent;
 import io.belov.vk.alarm.persistence.Alarm;
 import io.belov.vk.alarm.persistence.AlarmManager;
+import io.belov.vk.alarm.utils.ActivityUtils;
 import io.belov.vk.alarm.utils.IntentUtils;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
+import com.vk.sdk.VKSdk;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,6 +86,9 @@ public class AlarmListActivity extends BaseActivity {
             case R.id.action_help:
                 IntentUtils.openUri(this, "https://github.com/rakuishi/Alarm-Android/issues");
                 break;
+            case R.id.action_logout:
+                doLogout();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -120,6 +125,13 @@ public class AlarmListActivity extends BaseActivity {
 
     private void createAlaram() {
         startActivity(AlarmCreateActivity.createIntent(this));
+    }
+
+    private void doLogout() {
+        VKSdk.logout();
+        if (!VKSdk.isLoggedIn()) {
+            ActivityUtils.openLoginActivity(this);
+        }
     }
 
     @Subscribe

@@ -1,19 +1,15 @@
 package io.belov.vk.alarm.ui;
 
-import android.content.Intent;
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
-import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKCallback;
-import com.vk.sdk.VKScope;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKError;
 
 import io.belov.vk.alarm.R;
+import io.belov.vk.alarm.utils.ActivityUtils;
 
 /**
  * Created by fbelov on 19.10.15.
@@ -24,6 +20,8 @@ public class StartActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        final Activity activity = this;
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
         VKSdk.wakeUpSession(this, new VKCallback<VKSdk.LoginState>() {
@@ -32,10 +30,10 @@ public class StartActivity extends FragmentActivity {
                 if (isResumed) {
                     switch (res) {
                         case LoggedOut:
-                            openLoginActivity();
+                            ActivityUtils.openLoginActivity(activity);
                             break;
                         case LoggedIn:
-                            openAlarmsListActivity();
+                            ActivityUtils.openAlarmsListActivityWithoutAnimation(activity);
                             break;
                         case Pending:
                             break;
@@ -57,9 +55,9 @@ public class StartActivity extends FragmentActivity {
         super.onResume();
         isResumed = true;
         if (VKSdk.isLoggedIn()) {
-            openAlarmsListActivity();
+            ActivityUtils.openAlarmsListActivityWithoutAnimation(this);
         } else {
-            openLoginActivity();
+            ActivityUtils.openLoginWithoutAnimation(this);
         }
     }
 
@@ -72,16 +70,6 @@ public class StartActivity extends FragmentActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-    }
-
-    private void openAlarmsListActivity() {
-        startActivity(new Intent(this, AlarmListActivity.class));
-        overridePendingTransition(0, 0);
-    }
-
-    private void openLoginActivity() {
-        startActivity(new Intent(this, LoginActivity.class));
-        overridePendingTransition(0, 0);
     }
 
 }
