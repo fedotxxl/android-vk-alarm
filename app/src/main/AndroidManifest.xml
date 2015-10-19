@@ -61,7 +61,8 @@
         <activity
             android:name=".ui.AlarmCreateActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/alarm_create" >
+            android:label="@string/alarm_create"
+            android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />

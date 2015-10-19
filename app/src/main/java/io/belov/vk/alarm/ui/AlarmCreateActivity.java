@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import io.belov.vk.alarm.AlarmWrapper;
 import io.belov.vk.alarm.R;
 import io.belov.vk.alarm.bus.AlarmEvent;
 import io.belov.vk.alarm.persistence.Alarm;
@@ -21,6 +22,8 @@ import io.belov.vk.alarm.utils.AlarmUtils;
 import io.belov.vk.alarm.utils.IntentUtils;
 import com.squareup.otto.Bus;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -34,11 +37,14 @@ public class AlarmCreateActivity extends BaseAppCompatActivity implements KeyEve
 
     public static final String TAG = AlarmCreateActivity.class.getSimpleName();
     private Alarm mAlarm;
+    private AlarmWrapper alarmWrapper;
     private MenuItem mDoneMenuItem;
 
     @Inject
     AlarmManager mAlarmManager;
     @Inject Bus mBus;
+
+    Map<Alarm.Repeat, Button> repeatButtonsByEnum;
 
     @Bind(R.id.alarm_edit_when)
     TextView whenTextView;
@@ -97,7 +103,9 @@ public class AlarmCreateActivity extends BaseAppCompatActivity implements KeyEve
         super.onCreate(savedInstanceState);
         appComponent().inject(this);
         setContentView(R.layout.activity_alarm_create);
+
         ButterKnife.bind(this);
+        postBind();
 
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setTitle(R.string.alarm_create);
@@ -108,15 +116,26 @@ public class AlarmCreateActivity extends BaseAppCompatActivity implements KeyEve
         int id = IntentUtils.getInt(intent, EXTRA_ID);
 
         if (id != 0) {
-            mAlarm = mAlarmManager.find(id);
+            mAlarm = new Alarm(mAlarmManager.find(id));
         } else {
             mAlarm = new Alarm();
         }
 
-        setupListeners();
-        setupUiFromAlarm(mAlarm);
+        alarmWrapper = new AlarmWrapper(mAlarm);
 
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        setupListeners();
+        setupUiFromAlarm();
+    }
+
+    private void postBind() {
+        repeatButtonsByEnum = new HashMap<>();
+        repeatButtonsByEnum.put(Alarm.Repeat.MO, repeatMoButton);
+        repeatButtonsByEnum.put(Alarm.Repeat.TU, repeatTuButton);
+        repeatButtonsByEnum.put(Alarm.Repeat.WE, repeatWeButton);
+        repeatButtonsByEnum.put(Alarm.Repeat.TH, repeatThButton);
+        repeatButtonsByEnum.put(Alarm.Repeat.FR, repeatFrButton);
+        repeatButtonsByEnum.put(Alarm.Repeat.SA, repeatSaButton);
+        repeatButtonsByEnum.put(Alarm.Repeat.SU, repeatSuButton);
     }
 
     @Override
@@ -184,26 +203,69 @@ public class AlarmCreateActivity extends BaseAppCompatActivity implements KeyEve
     }
 
     private void setupListeners() {
-
+        setupDisableComplexityListeners();
+        setupRepeatListeners();
     }
 
-    private void setupUiFromAlarm(Alarm alarm) {
-        whenTextView.setText(AlarmUtils.getWhenAsString(alarm));
-
-        setupUiSong(alarm);
-        setupUiDisableComplexity(alarm);
+    private void setupDisableComplexityListeners() {
+        complexityEasyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setDisableComplexity(Alarm.DisableComplexity.EASY);
+            }
+        });
+        complexityMediumButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setDisableComplexity(Alarm.DisableComplexity.MEDIUM);
+            }
+        });
+        complexityHardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setDisableComplexity(Alarm.DisableComplexity.HARD);
+            }
+        });
     }
 
-    private void setupUiSong(Alarm alarm) {
+    private void setupRepeatListeners() {
+        for (Map.Entry<Alarm.Repeat, Button> e : repeatButtonsByEnum.entrySet()) {
+            final Alarm.Repeat repeat = e.getKey();
+
+            e.getValue().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    alarmWrapper.toggleRepeat(repeat);
+                    setupUiRepeat();
+                }
+            });
+        }
+    }
+
+    private void setDisableComplexity(Alarm.DisableComplexity disableComplexity) {
+        mAlarm.setDisableComplexity(disableComplexity.getId());
+
+        setupUiDisableComplexity();
+    }
+
+    private void setupUiFromAlarm() {
+        whenTextView.setText(AlarmUtils.getWhenAsString(mAlarm));
+
+        setupUiSong();
+        setupUiDisableComplexity();
+        setupUiRepeat();
+    }
+
+    private void setupUiSong() {
         String songTitle;
         String songArtist;
 
-        if (alarm.getSongId() == null) {
+        if (mAlarm.getSongId() == null) {
             songTitle = getString(R.string.alarm_edit_random);
             songArtist = null;
         } else {
-            songTitle = alarm.getSongTitle();
-            songArtist = alarm.getSongBandName();
+            songTitle = mAlarm.getSongTitle();
+            songArtist = mAlarm.getSongBandName();
         }
 
         songTitleTextView.setText(songTitle);
@@ -216,8 +278,8 @@ public class AlarmCreateActivity extends BaseAppCompatActivity implements KeyEve
         }
     }
 
-    private void setupUiDisableComplexity(Alarm alarm) {
-        Alarm.DisableComplexity disableComplexity = Alarm.DisableComplexity.myValueOf(alarm.getDisableComplexity());
+    private void setupUiDisableComplexity() {
+        Alarm.DisableComplexity disableComplexity = Alarm.DisableComplexity.myValueOf(mAlarm.getDisableComplexity());
         Button[] buttons = new Button[] {complexityEasyButton, complexityMediumButton, complexityHardButton};
         Button activeButton = null;
 
@@ -231,6 +293,12 @@ public class AlarmCreateActivity extends BaseAppCompatActivity implements KeyEve
 
         for (Button button : buttons) {
             button.setSelected(button == activeButton);
+        }
+    }
+
+    private void setupUiRepeat() {
+        for (Alarm.Repeat repeat : Alarm.Repeat.values()) {
+            repeatButtonsByEnum.get(repeat).setSelected(alarmWrapper.isRepeatActive(repeat));
         }
     }
 

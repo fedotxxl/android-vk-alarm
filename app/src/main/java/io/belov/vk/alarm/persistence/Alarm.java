@@ -20,6 +20,21 @@ public class Alarm extends RealmObject {
     public Alarm() {
     }
 
+    public Alarm(Alarm alarm) {
+        this.id = alarm.id;
+        this.whenHours = alarm.whenHours;
+        this.whenMinutes = alarm.whenMinutes;
+        this.disableComplexity = alarm.disableComplexity;
+        this.repeat = alarm.repeat;
+        this.snoozeInMinutes = alarm.snoozeInMinutes;
+        this.isEnabled = alarm.isEnabled;
+        this.isVibrate = alarm.isVibrate;
+        this.songId = alarm.songId;
+        this.songTitle = alarm.songTitle;
+        this.songBandName = alarm.songBandName;
+    }
+
+
     //    public String getName() {
 //        return name;
 //    }
@@ -52,6 +67,10 @@ public class Alarm extends RealmObject {
             }
 
             return null;
+        }
+
+        public int getId() {
+            return id;
         }
     }
 
