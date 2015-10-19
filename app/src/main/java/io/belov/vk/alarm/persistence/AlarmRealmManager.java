@@ -2,13 +2,19 @@ package io.belov.vk.alarm.persistence;
 
 import android.content.Context;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
+import io.belov.vk.alarm.AlarmWrapper;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 
 public class AlarmRealmManager implements AlarmManager {
+
+    private static final AlarmListComparator ALARM_LIST_COMPARATOR = new AlarmListComparator();
 
     private Realm mRealm;
 
@@ -26,25 +32,31 @@ public class AlarmRealmManager implements AlarmManager {
     @Override
     public List<Alarm> findAll() {
         RealmResults<Alarm> results = mRealm.where(Alarm.class).findAll();
-        return results.subList(0, results.size());
+        List<Alarm> answer = new ArrayList<>(results);
+
+        Collections.sort(answer, ALARM_LIST_COMPARATOR);
+
+        return answer;
     }
 
     @Override
     public void insert(Alarm data) {
         mRealm.beginTransaction();
         Alarm alarm = mRealm.createObject(Alarm.class);
-        alarm.setId((int) mRealm.where(Alarm.class).maximumInt("id") + 1);
+        AlarmWrapper wrapper = new AlarmWrapper(alarm);
 
-        alarm.setWhenHours(data.getWhenHours());
-        alarm.setWhenMinutes(data.getWhenMinutes());
-        alarm.setDisableComplexity(data.getDisableComplexity());
-        alarm.setRepeat(data.getRepeat());
-        alarm.setSnoozeInMinutes(data.getSnoozeInMinutes());
-        alarm.setIsEnabled(data.isEnabled());
-        alarm.setIsVibrate(data.isVibrate());
-        alarm.setSongId(data.getSongId());
-        alarm.setSongTitle(data.getSongTitle());
-        alarm.setSongBandName(data.getSongBandName());
+        wrapper.setPropertiesFrom((int) mRealm.where(Alarm.class).maximumInt("id") + 1, data);
+
+        mRealm.commitTransaction();
+    }
+
+    public void findAndUpdate(Alarm data) {
+        Alarm alarm = find(data.getId());
+        AlarmWrapper wrapper = new AlarmWrapper(alarm);
+
+        mRealm.beginTransaction();
+
+        wrapper.setPropertiesFrom(data);
 
         mRealm.commitTransaction();
     }
@@ -69,5 +81,14 @@ public class AlarmRealmManager implements AlarmManager {
         RealmResults<Alarm> results = mRealm.where(Alarm.class).equalTo("completed", true).findAll();
         results.clear();
         mRealm.commitTransaction();
+    }
+
+    private static class AlarmListComparator implements Comparator<Alarm> {
+
+        @Override
+        public int compare(Alarm lhs, Alarm rhs) {
+            return new AlarmWrapper(lhs).getWhenInMinutes() - new AlarmWrapper(rhs).getWhenInMinutes();
+        }
+
     }
 }

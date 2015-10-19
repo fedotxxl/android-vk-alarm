@@ -4,11 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -20,6 +20,9 @@ import io.belov.vk.alarm.persistence.Alarm;
 import io.belov.vk.alarm.persistence.AlarmManager;
 import io.belov.vk.alarm.utils.AlarmUtils;
 import io.belov.vk.alarm.utils.IntentUtils;
+
+import com.codetroopers.betterpickers.timepicker.TimePickerBuilder;
+import com.codetroopers.betterpickers.timepicker.TimePickerDialogFragment;
 import com.squareup.otto.Bus;
 
 import java.util.HashMap;
@@ -28,7 +31,9 @@ import java.util.Random;
 
 import javax.inject.Inject;
 
-import static io.belov.vk.alarm.Config.EXTRA_ID;
+import static io.belov.vk.alarm.Config.EXTRA_ALARM_ID;
+import static io.belov.vk.alarm.Config.EXTRA_ALARM_WHEN_HOURS;
+import static io.belov.vk.alarm.Config.EXTRA_ALARM_WHEN_MINUTES;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -88,13 +93,9 @@ public class AlarmCreateActivity extends BaseAppCompatActivity implements KeyEve
     @Bind(R.id.alarm_edit_repeat_su)
     Button repeatSuButton;
 
-    public static Intent createIntent(Context context) {
-        return new Intent(context, AlarmCreateActivity.class);
-    }
-
     public static Intent createIntent(Context context, int id) {
         Intent intent = new Intent(context, AlarmCreateActivity.class);
-        intent.putExtra(EXTRA_ID, id);
+        intent.putExtra(EXTRA_ALARM_ID, id);
         return intent;
     }
 
@@ -111,16 +112,7 @@ public class AlarmCreateActivity extends BaseAppCompatActivity implements KeyEve
         getSupportActionBar().setTitle(R.string.alarm_create);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Intent intent = getIntent();
-
-        int id = IntentUtils.getInt(intent, EXTRA_ID);
-
-        if (id != 0) {
-            mAlarm = new Alarm(mAlarmManager.find(id));
-        } else {
-            mAlarm = new Alarm();
-        }
-
+        mAlarm = new Alarm(mAlarmManager.find(IntentUtils.getInt(getIntent(), EXTRA_ALARM_ID)));
         alarmWrapper = new AlarmWrapper(mAlarm);
 
         setupListeners();
@@ -178,14 +170,8 @@ public class AlarmCreateActivity extends BaseAppCompatActivity implements KeyEve
     }
 
     private void saveAlarm() {
-        if (mAlarm == null) {
-            mAlarmManager.insert(getAlarmToInsert());
-            mBus.post(new AlarmEvent(AlarmEvent.QUERY_INSERT));
-        } else {
-            //, mEditText.getText().toString()
-            mAlarmManager.update(mAlarm);
-            mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
-        }
+        mAlarmManager.findAndUpdate(mAlarm);
+        mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
     }
 
     private boolean enableToSave() {
@@ -203,8 +189,48 @@ public class AlarmCreateActivity extends BaseAppCompatActivity implements KeyEve
     }
 
     private void setupListeners() {
+        setupWhenListener();
+        setupLabelListener();
         setupDisableComplexityListeners();
         setupRepeatListeners();
+    }
+
+    private void setupWhenListener() {
+        whenTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TimeFragment fragment = new TimeFragment(new TimePickerDialogFragment.TimePickerDialogHandler() {
+                    @Override
+                    public void onDialogTimeSet(int reference, int hourOfDay, int minute) {
+                        alarmWrapper.setWhen(hourOfDay, minute);
+                        setupUiWhen();
+                    }
+                });
+
+                TimePickerBuilder dpb = new TimePickerBuilder()
+                        .setTargetFragment(fragment)
+                        .setFragmentManager(getSupportFragmentManager())
+                        .setStyleResId(R.style.BetterPickersDialogFragment);
+                dpb.show();
+            }
+        });
+    }
+
+    private void setupLabelListener() {
+        labelEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                mAlarm.setLabel(s.toString());
+            }
+        });
     }
 
     private void setupDisableComplexityListeners() {
@@ -249,11 +275,19 @@ public class AlarmCreateActivity extends BaseAppCompatActivity implements KeyEve
     }
 
     private void setupUiFromAlarm() {
-        whenTextView.setText(AlarmUtils.getWhenAsString(mAlarm));
-
+        setupUiWhen();
+        setupUiLabel();
         setupUiSong();
         setupUiDisableComplexity();
         setupUiRepeat();
+    }
+
+    private void setupUiWhen() {
+        whenTextView.setText(AlarmUtils.getWhenAsString(mAlarm));
+    }
+
+    private void setupUiLabel() {
+        labelEditText.setText(mAlarm.getLabel());
     }
 
     private void setupUiSong() {
@@ -307,27 +341,5 @@ public class AlarmCreateActivity extends BaseAppCompatActivity implements KeyEve
         Intent intent = new Intent(this, AlarmListActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
-    }
-
-    private Alarm getAlarmToInsert() {
-        Random r = new Random();
-        Alarm alarm = new Alarm();
-
-        alarm.setIsEnabled(true);
-
-        alarm.setWhenHours(r.nextInt(24));
-        alarm.setWhenMinutes(r.nextInt(60));
-        alarm.setDisableComplexity(r.nextInt(3));
-        alarm.setRepeat(Alarm.Repeat.MO.getId() + Alarm.Repeat.WE.getId());
-        alarm.setSnoozeInMinutes(5);
-        alarm.setIsVibrate(r.nextBoolean());
-
-        if (r.nextBoolean()) {
-            alarm.setSongId("abc");
-            alarm.setSongTitle("Bohemian Rhapsody");
-            alarm.setSongBandName("The Queen");
-        }
-
-        return alarm;
     }
 }

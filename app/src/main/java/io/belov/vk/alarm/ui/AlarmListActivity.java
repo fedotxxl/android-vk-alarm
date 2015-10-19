@@ -1,5 +1,6 @@
 package io.belov.vk.alarm.ui;
 
+import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import io.belov.vk.alarm.R;
 import io.belov.vk.alarm.alert.AlarmAlertScheduler;
+import io.belov.vk.alarm.bus.AlarmCreateEvent;
 import io.belov.vk.alarm.bus.AlarmEvent;
 import io.belov.vk.alarm.bus.AlarmItemOpenEvent;
 import io.belov.vk.alarm.bus.AlarmToggleEnabledEvent;
@@ -21,6 +23,9 @@ import io.belov.vk.alarm.persistence.Alarm;
 import io.belov.vk.alarm.persistence.AlarmManager;
 import io.belov.vk.alarm.utils.ActivityUtils;
 import io.belov.vk.alarm.utils.IntentUtils;
+
+import com.codetroopers.betterpickers.timepicker.TimePickerBuilder;
+import com.codetroopers.betterpickers.timepicker.TimePickerDialogFragment;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.vk.sdk.VKSdk;
@@ -32,7 +37,6 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnItemClick;
 import butterknife.OnItemLongClick;
 
 public class AlarmListActivity extends BaseAppCompatActivity {
@@ -82,7 +86,7 @@ public class AlarmListActivity extends BaseAppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add:
-                createAlaram();
+                createAlarm();
                 break;
             case R.id.action_github:
                 IntentUtils.openUri(this, "https://github.com/rakuishi/Alarm-Android/");
@@ -118,8 +122,19 @@ public class AlarmListActivity extends BaseAppCompatActivity {
         return true;
     }
 
-    private void createAlaram() {
-        startActivity(AlarmCreateActivity.createIntent(this));
+    private void createAlarm() {
+        TimeFragment fragment = new TimeFragment(new TimePickerDialogFragment.TimePickerDialogHandler() {
+            @Override
+            public void onDialogTimeSet(int reference, int hourOfDay, int minute) {
+                mBus.post(new AlarmCreateEvent(hourOfDay, minute));
+            }
+        });
+
+        TimePickerBuilder dpb = new TimePickerBuilder()
+                .setTargetFragment(fragment)
+                .setFragmentManager(getSupportFragmentManager())
+                .setStyleResId(R.style.BetterPickersDialogFragment);
+        dpb.show();
     }
 
     private void doLogout() {
@@ -145,6 +160,19 @@ public class AlarmListActivity extends BaseAppCompatActivity {
 
         Alarm alarm = mAdapter.getItem(event.getPosition());
         mAlarmManager.update(alarm, !alarm.isEnabled());
+        mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
+    }
+
+    @Subscribe
+    public void onAlarmCreateEvent(AlarmCreateEvent event) {
+        Alarm alarm = new Alarm();
+        alarm.setIsEnabled(true);
+        alarm.setIsVibrate(true);
+        alarm.setDisableComplexity(Alarm.DisableComplexity.EASY.getId());
+        alarm.setWhenHours(event.getHourOfDay());
+        alarm.setWhenMinutes(event.getMinute());
+
+        mAlarmManager.insert(alarm);
         mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
     }
 

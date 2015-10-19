@@ -12,6 +12,7 @@ public class Alarm extends RealmObject {
     private int snoozeInMinutes;
     private boolean isEnabled;
     private boolean isVibrate;
+    private String label;
 
     private String songId;
     private String songTitle;
@@ -21,17 +22,18 @@ public class Alarm extends RealmObject {
     }
 
     public Alarm(Alarm alarm) {
-        this.id = alarm.id;
-        this.whenHours = alarm.whenHours;
-        this.whenMinutes = alarm.whenMinutes;
-        this.disableComplexity = alarm.disableComplexity;
-        this.repeat = alarm.repeat;
-        this.snoozeInMinutes = alarm.snoozeInMinutes;
-        this.isEnabled = alarm.isEnabled;
-        this.isVibrate = alarm.isVibrate;
-        this.songId = alarm.songId;
-        this.songTitle = alarm.songTitle;
-        this.songBandName = alarm.songBandName;
+        this.id = alarm.getId();
+        this.whenHours = alarm.getWhenHours();
+        this.whenMinutes = alarm.getWhenMinutes();
+        this.disableComplexity = alarm.getDisableComplexity();
+        this.repeat = alarm.getRepeat();
+        this.snoozeInMinutes = alarm.getSnoozeInMinutes();
+        this.isEnabled = alarm.isEnabled();
+        this.isVibrate = alarm.isVibrate();
+        this.label = alarm.getLabel();
+        this.songId = alarm.getSongId();
+        this.songTitle = alarm.getSongTitle();
+        this.songBandName = alarm.getSongBandName();
     }
 
 
@@ -180,5 +182,13 @@ public class Alarm extends RealmObject {
 
     public void setSongBandName(String songBandName) {
         this.songBandName = songBandName;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 }
