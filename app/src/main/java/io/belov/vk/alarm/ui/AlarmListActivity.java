@@ -34,7 +34,7 @@ import butterknife.ButterKnife;
 import butterknife.OnItemClick;
 import butterknife.OnItemLongClick;
 
-public class AlarmListActivity extends BaseActivity {
+public class AlarmListActivity extends BaseAppCompatActivity {
 
     public static final String TAG = AlarmListActivity.class.getSimpleName();
     private AlarmListAdapter mAdapter;

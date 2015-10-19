@@ -1,17 +1,13 @@
 package io.belov.vk.alarm.ui;
 
-import android.app.Activity;
+import android.support.v7.app.AppCompatActivity;
 
 import io.belov.vk.alarm.App;
 import io.belov.vk.alarm.AppComponent;
 
-/**
- * Created by fbelov on 19.10.15.
- */
-public class BaseActivity extends Activity {
+public class BaseAppCompatActivity extends AppCompatActivity {
 
     protected AppComponent appComponent() {
         return ((App) getApplication()).getAppComponent();
     }
-
 }

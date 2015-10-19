@@ -9,6 +9,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import io.belov.vk.alarm.alert.AlarmAlertScheduler;
+import io.belov.vk.alarm.vk.VkSongManager;
 
 @Module
 public class AppModule {
@@ -27,5 +28,10 @@ public class AppModule {
     @Provides @Singleton
     public AlarmAlertScheduler provideScheduler(Context context) {
         return new AlarmAlertScheduler(context);
+    }
+
+    @Provides @Singleton
+    public VkSongManager provideVkSongManager() {
+        return new VkSongManager();
     }
 }

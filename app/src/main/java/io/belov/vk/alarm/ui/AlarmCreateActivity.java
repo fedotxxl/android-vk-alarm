@@ -25,7 +25,7 @@ import static io.belov.vk.alarm.Config.EXTRA_ID;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class AlarmCreateActivity extends BaseActivity implements KeyEventEditText.KeyEventListener {
+public class AlarmCreateActivity extends BaseAppCompatActivity implements KeyEventEditText.KeyEventListener {
 
     public static final String TAG = AlarmCreateActivity.class.getSimpleName();
     private Alarm mAlarm;

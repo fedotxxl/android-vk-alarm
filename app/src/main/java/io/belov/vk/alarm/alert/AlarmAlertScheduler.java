@@ -30,7 +30,7 @@ public class AlarmAlertScheduler {
     }
 
     private long getAlarmTime(Alarm alarm) {
-        return System.currentTimeMillis() + 1000*10;
+        return System.currentTimeMillis() + 1000*5;
     }
 
 }

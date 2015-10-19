@@ -31,6 +31,11 @@ public class AlarmAlert implements Serializable {
         this.songBandName = alarm.getSongBandName();
     }
 
+    public boolean isRandom() {
+        return true;
+//        return songId == null;
+    }
+
     public int getId() {
         return id;
     }
