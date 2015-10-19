@@ -1,6 +1,5 @@
 package io.belov.vk.alarm.ui;
 
-import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -114,9 +113,9 @@ public class AlarmListActivity extends BaseAppCompatActivity {
                     new Pair<>(view.findViewById(R.id.item_alarm_when), getString(R.string.transition_name_alarm_name));
             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, pair);
 
-            startActivity(AlarmCreateActivity.createIntent(this, alarm.getId()), options.toBundle());
+            startActivity(AlarmEditActivity.createIntent(this, alarm.getId()), options.toBundle());
         } else {
-            startActivity(AlarmCreateActivity.createIntent(this, alarm.getId()));
+            startActivity(AlarmEditActivity.createIntent(this, alarm.getId()));
         }
 
         return true;

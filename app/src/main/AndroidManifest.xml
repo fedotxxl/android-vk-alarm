@@ -59,7 +59,7 @@
         </activity>
 
         <activity
-            android:name=".ui.AlarmCreateActivity"
+            android:name=".ui.AlarmEditActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/alarm_create"
             android:windowSoftInputMode="stateHidden">

@@ -27,20 +27,17 @@ import com.squareup.otto.Bus;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 import javax.inject.Inject;
 
 import static io.belov.vk.alarm.Config.EXTRA_ALARM_ID;
-import static io.belov.vk.alarm.Config.EXTRA_ALARM_WHEN_HOURS;
-import static io.belov.vk.alarm.Config.EXTRA_ALARM_WHEN_MINUTES;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class AlarmCreateActivity extends BaseAppCompatActivity implements KeyEventEditText.KeyEventListener {
+public class AlarmEditActivity extends BaseAppCompatActivity implements KeyEventEditText.KeyEventListener {
 
-    public static final String TAG = AlarmCreateActivity.class.getSimpleName();
+    public static final String TAG = AlarmEditActivity.class.getSimpleName();
     private Alarm mAlarm;
     private AlarmWrapper alarmWrapper;
     private MenuItem mDoneMenuItem;
@@ -94,7 +91,7 @@ public class AlarmCreateActivity extends BaseAppCompatActivity implements KeyEve
     Button repeatSuButton;
 
     public static Intent createIntent(Context context, int id) {
-        Intent intent = new Intent(context, AlarmCreateActivity.class);
+        Intent intent = new Intent(context, AlarmEditActivity.class);
         intent.putExtra(EXTRA_ALARM_ID, id);
         return intent;
     }
@@ -103,7 +100,7 @@ public class AlarmCreateActivity extends BaseAppCompatActivity implements KeyEve
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         appComponent().inject(this);
-        setContentView(R.layout.activity_alarm_create);
+        setContentView(R.layout.activity_alarm_edit);
 
         ButterKnife.bind(this);
         postBind();
