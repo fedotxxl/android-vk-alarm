@@ -3,6 +3,8 @@ package io.belov.vk.alarm.utils;
 import android.app.Activity;
 import android.content.Intent;
 
+import io.belov.vk.alarm.persistence.Alarm;
+import io.belov.vk.alarm.ui.AlarmCreateActivity;
 import io.belov.vk.alarm.ui.AlarmListActivity;
 import io.belov.vk.alarm.ui.LoginActivity;
 
@@ -27,6 +29,10 @@ public class ActivityUtils {
     public static void openLoginWithoutAnimation(Activity activity) {
         openLoginActivity(activity);
         disableAnimation(activity);
+    }
+
+    public static void openAlarm(Alarm alarm, Activity activity) {
+        activity.startActivity(AlarmCreateActivity.createIntent(activity, alarm.getId()));
     }
 
     private static void disableAnimation(Activity activity) {

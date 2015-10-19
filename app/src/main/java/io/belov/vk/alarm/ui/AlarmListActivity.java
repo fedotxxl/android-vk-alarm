@@ -15,6 +15,7 @@ import android.widget.Toast;
 import io.belov.vk.alarm.R;
 import io.belov.vk.alarm.alert.AlarmAlertScheduler;
 import io.belov.vk.alarm.bus.AlarmEvent;
+import io.belov.vk.alarm.bus.AlarmItemOpenEvent;
 import io.belov.vk.alarm.bus.AlarmToggleEnabledEvent;
 import io.belov.vk.alarm.persistence.Alarm;
 import io.belov.vk.alarm.persistence.AlarmManager;
@@ -100,21 +101,6 @@ public class AlarmListActivity extends BaseAppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-//    @OnClick(R.id.alarm_list_add_imagebutton)
-//    void onClickInsertButton() {
-//        createAlaram();
-//    }
-
-    @OnItemClick(R.id.alarm_list_listview)
-    void onItemClick(int position) {
-//        Alarm alarm = mAdapter.getItem(position);
-//        mAlarmManager.update(alarm, !alarm.isEnabled());
-//        mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
-
-//        alertScheduler.schedule(mAdapter.getItem(position));
-//        Toast.makeText(this, "Scheduled!", Toast.LENGTH_LONG).show();
-    }
-
     @OnItemLongClick(R.id.alarm_list_listview)
     boolean onItemLongClick(int position, View view) {
         Alarm alarm = mAdapter.getItem(position);
@@ -160,5 +146,10 @@ public class AlarmListActivity extends BaseAppCompatActivity {
         Alarm alarm = mAdapter.getItem(event.getPosition());
         mAlarmManager.update(alarm, !alarm.isEnabled());
         mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
+    }
+
+    @Subscribe
+    public void onAlarmOpenEvent(AlarmItemOpenEvent event) {
+        ActivityUtils.openAlarm(mAdapter.getItem(event.getPosition()), this);
     }
 }

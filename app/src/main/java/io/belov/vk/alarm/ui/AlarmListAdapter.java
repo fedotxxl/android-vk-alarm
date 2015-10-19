@@ -19,6 +19,7 @@ import com.squareup.otto.Bus;
 
 import io.belov.vk.alarm.R;
 import io.belov.vk.alarm.bus.AlarmEvent;
+import io.belov.vk.alarm.bus.AlarmItemOpenEvent;
 import io.belov.vk.alarm.bus.AlarmToggleEnabledEvent;
 import io.belov.vk.alarm.persistence.Alarm;
 
@@ -52,6 +53,13 @@ public class AlarmListAdapter extends ArrayAdapter<Alarm> implements ListAdapter
         } else {
             viewHolder = (ViewHolder)convertView.getTag();
         }
+
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBus.post(new AlarmItemOpenEvent(position));
+            }
+        });
 
         Alarm alarm = getItem(position);
         boolean isEnabled = alarm.isEnabled();
