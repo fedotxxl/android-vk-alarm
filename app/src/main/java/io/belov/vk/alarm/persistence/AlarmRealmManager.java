@@ -69,6 +69,14 @@ public class AlarmRealmManager implements AlarmManager {
     }
 
     @Override
+    public void delete(int id) {
+        mRealm.beginTransaction();
+        RealmResults<Alarm> results = mRealm.where(Alarm.class).equalTo("id", id).findAll();
+        results.clear();
+        mRealm.commitTransaction();
+    }
+
+    @Override
     public void update(Alarm alarm, boolean isEnabled) {
         mRealm.beginTransaction();
         alarm.setIsEnabled(isEnabled);

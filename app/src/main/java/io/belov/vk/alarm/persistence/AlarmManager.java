@@ -8,6 +8,7 @@ public interface AlarmManager {
     void insert(Alarm alarm);
     void findAndUpdate(Alarm alarm);
     void update(Alarm alarm);
+    void delete(int id);
     void update(Alarm alarm, boolean enabled);
     void deleteCompleted();
 }

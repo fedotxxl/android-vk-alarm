@@ -1,9 +1,11 @@
 package io.belov.vk.alarm.ui;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,6 +22,7 @@ import io.belov.vk.alarm.R;
 import io.belov.vk.alarm.bus.AlarmEvent;
 import io.belov.vk.alarm.persistence.Alarm;
 import io.belov.vk.alarm.persistence.AlarmManager;
+import io.belov.vk.alarm.utils.ActivityUtils;
 import io.belov.vk.alarm.utils.AlarmUtils;
 import io.belov.vk.alarm.utils.IntentUtils;
 
@@ -46,7 +49,8 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
 
     @Inject
     AlarmManager mAlarmManager;
-    @Inject Bus mBus;
+    @Inject
+    Bus mBus;
 
     Map<Alarm.Repeat, Button> repeatButtonsByEnum;
 
@@ -125,12 +129,12 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setCustomView(v);
         Toolbar parent = (Toolbar) v.getParent();
-        parent.setContentInsetsAbsolute(0,0);
+        parent.setContentInsetsAbsolute(0, 0);
 
         v.findViewById(R.id.action_save).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finishAlarmCreateActivity();
+                saveAndClose();
             }
         });
     }
@@ -156,8 +160,11 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                finishAlarmCreateActivity();
+            case R.id.action_cancel:
+                close();
+                return true;
+            case R.id.action_delete:
+                showDeleteDialog();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -166,12 +173,7 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        finishAlarmCreateActivity();
-    }
-
-    private void saveAlarm() {
-        mAlarmManager.findAndUpdate(mAlarm);
-        mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
+        close();
     }
 
     private void setupListeners() {
@@ -300,7 +302,7 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
 
     private void setupUiDisableComplexity() {
         Alarm.DisableComplexity disableComplexity = Alarm.DisableComplexity.myValueOf(mAlarm.getDisableComplexity());
-        Button[] buttons = new Button[] {complexityEasyButton, complexityMediumButton, complexityHardButton};
+        Button[] buttons = new Button[]{complexityEasyButton, complexityMediumButton, complexityHardButton};
         Button activeButton = null;
 
         if (disableComplexity == Alarm.DisableComplexity.EASY) {
@@ -322,10 +324,38 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
         }
     }
 
-    private void finishAlarmCreateActivity() {
+    private void saveAndClose() {
+        save();
+        close();
+    }
+
+    private void showDeleteDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.delete_dialog_title)
+                .setMessage(R.string.delete_dialog_message)
+                .setPositiveButton(R.string.dialog_button_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        delete();
+                        close();
+                    }
+                })
+                .setNegativeButton(R.string.dialog_button_cancel, null)
+                .show();
+    }
+
+    private void delete() {
+        mAlarmManager.delete(mAlarm.getId());
+        mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
+    }
+
+    private void save() {
+        mAlarmManager.findAndUpdate(mAlarm);
+        mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
+    }
+
+    private void close() {
         finish();
-        Intent intent = new Intent(this, AlarmListActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
+        ActivityUtils.openAlarmsListActivity(this);
     }
 }

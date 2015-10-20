@@ -177,6 +177,7 @@ public class AlarmListActivity extends BaseAppCompatActivity {
 
     @Subscribe
     public void onAlarmOpenEvent(AlarmItemOpenEvent event) {
+        finish();
         ActivityUtils.openAlarm(mAdapter.getItem(event.getPosition()), this);
     }
 }
