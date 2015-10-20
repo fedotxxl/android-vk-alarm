@@ -3,9 +3,11 @@ package io.belov.vk.alarm.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,12 +37,12 @@ import static io.belov.vk.alarm.Config.EXTRA_ALARM_ID;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class AlarmEditActivity extends BaseAppCompatActivity implements KeyEventEditText.KeyEventListener {
+public class AlarmEditActivity extends BaseAppCompatActivity {
 
     public static final String TAG = AlarmEditActivity.class.getSimpleName();
+
     private Alarm mAlarm;
     private AlarmWrapper alarmWrapper;
-    private MenuItem mDoneMenuItem;
 
     @Inject
     AlarmManager mAlarmManager;
@@ -105,15 +107,32 @@ public class AlarmEditActivity extends BaseAppCompatActivity implements KeyEvent
         ButterKnife.bind(this);
         postBind();
 
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setTitle(R.string.alarm_create);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         mAlarm = new Alarm(mAlarmManager.find(IntentUtils.getInt(getIntent(), EXTRA_ALARM_ID)));
         alarmWrapper = new AlarmWrapper(mAlarm);
 
+        setupActionBar();
         setupListeners();
         setupUiFromAlarm();
+    }
+
+    private void setupActionBar() {
+        LayoutInflater inflator = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = inflator.inflate(R.layout.menu_alarm_edit, null);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(false);
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setCustomView(v);
+        Toolbar parent = (Toolbar) v.getParent();
+        parent.setContentInsetsAbsolute(0,0);
+
+        v.findViewById(R.id.action_save).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finishAlarmCreateActivity();
+            }
+        });
     }
 
     private void postBind() {
@@ -129,17 +148,14 @@ public class AlarmEditActivity extends BaseAppCompatActivity implements KeyEvent
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.alarm_create, menu);
-        mDoneMenuItem = menu.findItem(R.id.action_done);
-        updateDoneMenuItem();
+        getMenuInflater().inflate(R.menu.alarm_edit, menu);
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_done:
-                saveAlarm();
             case android.R.id.home:
                 finishAlarmCreateActivity();
                 return true;
@@ -149,40 +165,13 @@ public class AlarmEditActivity extends BaseAppCompatActivity implements KeyEvent
     }
 
     @Override
-    public void onEnterPressed() {
-        if (enableToSave()) {
-            saveAlarm();
-            finishAlarmCreateActivity();
-        }
-    }
-
-    @Override
     public void onBackPressed() {
         finishAlarmCreateActivity();
-    }
-
-    @Override
-    public void onTextChanged() {
-        updateDoneMenuItem();
     }
 
     private void saveAlarm() {
         mAlarmManager.findAndUpdate(mAlarm);
         mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
-    }
-
-    private boolean enableToSave() {
-        return true;
-    }
-
-    private void updateDoneMenuItem() {
-        if (enableToSave()) {
-            mDoneMenuItem.setEnabled(true);
-            mDoneMenuItem.getIcon().setAlpha(255);
-        } else {
-            mDoneMenuItem.setEnabled(false);
-            mDoneMenuItem.getIcon().setAlpha(127);
-        }
     }
 
     private void setupListeners() {

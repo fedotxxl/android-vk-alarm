@@ -60,7 +60,7 @@ public class AlarmListActivity extends BaseAppCompatActivity {
         appComponent().inject(this);
         setContentView(R.layout.activity_alarm_list);
         ButterKnife.bind(this);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+
         mBus.register(this);
 
         mList.addAll(mAlarmManager.findAll());

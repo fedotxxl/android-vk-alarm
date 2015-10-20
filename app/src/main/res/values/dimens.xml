@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <dimen name="navigation_drawer_width">304dp</dimen>
 
@@ -14,6 +14,9 @@
     <!-- Keylines and spacing
          http://www.google.com/design/spec/layout/metrics-keylines.html -->
     <dimen name="dp_4">4dp</dimen>
+
+    <dimen name="dp_10">10dp</dimen>
+
     <!-- Space between content areas -->
     <dimen name="dp_8">8dp</dimen>
     <!-- Defaults screen margin -->
@@ -48,4 +51,8 @@
 
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <!--http://stackoverflow.com/questions/33236333/how-to-set-menu-buttons-height-same-as-actionbar-height/33237016#33237016-->
+    <dimen name="abc_action_button_min_height_material" tools:override="true">@dimen/abc_action_bar_default_height_material</dimen>
+    <dimen name="abc_action_button_min_width_material" tools:override="true">@dimen/abc_action_bar_default_height_material</dimen>
 </resources>

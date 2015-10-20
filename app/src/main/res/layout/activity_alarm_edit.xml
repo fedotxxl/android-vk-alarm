@@ -6,12 +6,6 @@
     android:descendantFocusability="beforeDescendants"
     android:focusableInTouchMode="true">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_56" />
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
