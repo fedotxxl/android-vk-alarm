@@ -1,6 +1,7 @@
 package io.belov.vk.alarm;
 
 import io.belov.vk.alarm.persistence.Alarm;
+import io.belov.vk.alarm.utils.StringUtils;
 
 /**
  * Created by fbelov on 19.10.15.
@@ -38,6 +39,10 @@ public class AlarmWrapper {
 
     public int getWhenInMinutes() {
         return alarm.getWhenHours()*60 + alarm.getWhenMinutes();
+    }
+
+    public boolean hasLabel() {
+        return StringUtils.isEmpty(alarm.getLabel());
     }
 
     public boolean isRepeatActive(Alarm.Repeat repeat) {

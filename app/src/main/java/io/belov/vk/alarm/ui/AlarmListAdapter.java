@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
+import io.belov.vk.alarm.AlarmWrapper;
 import io.belov.vk.alarm.R;
 import io.belov.vk.alarm.bus.AlarmEvent;
 import io.belov.vk.alarm.bus.AlarmItemOpenEvent;
@@ -63,13 +64,39 @@ public class AlarmListAdapter extends ArrayAdapter<Alarm> implements ListAdapter
 
         Alarm alarm = getItem(position);
         boolean isEnabled = alarm.isEnabled();
+        int color = getColor((isEnabled) ? R.color.alarmItemEnabled : R.color.alarmItemDisabled);
 
+        setupUiWhen(viewHolder, alarm, color);
+        setupUiRepeat(viewHolder, alarm, color);
+        setupUiLabel(viewHolder, alarm, color);
+        setupButtonIsEnabled(viewHolder, alarm, position);
+
+        return convertView;
+    }
+
+    private void setupUiWhen(ViewHolder viewHolder, Alarm alarm, int color) {
         viewHolder.textViewWhen.setText(AlarmUtils.getWhenAsString(alarm));
-        viewHolder.textViewWhen.setTextColor(getColor((isEnabled) ? R.color.alarmItemWhenEnabled : R.color.alarmItemWhenDisabled));
+        viewHolder.textViewWhen.setTextColor(color);
+    }
+
+    private void setupUiRepeat(ViewHolder viewHolder, Alarm alarm, int color) {
         viewHolder.textViewRepeat.setText(AlarmUtils.getRepeatAsString(this.getContext(), alarm));
-        viewHolder.textViewRepeat.setTextColor(getColor((isEnabled) ? R.color.alarmItemRepeatEnabled : R.color.alarmItemRepeatDisabled));
+        viewHolder.textViewRepeat.setTextColor(color);
+    }
+
+    private void setupUiLabel(ViewHolder viewHolder, Alarm alarm, int color) {
+        int visibility = (new AlarmWrapper(alarm).hasLabel()) ? View.VISIBLE : View.GONE;
+
+        viewHolder.textViewLabel.setText(alarm.getLabel());
+        viewHolder.textViewLabel.setTextColor(color);
+        viewHolder.textViewLabel.setVisibility(visibility);
+        viewHolder.textViewSubSeparator.setTextColor(color);
+        viewHolder.textViewSubSeparator.setVisibility(visibility);
+    }
+
+    private void setupButtonIsEnabled(ViewHolder viewHolder, Alarm alarm, final int position) {
         viewHolder.buttonIsEnabled.setTypeface(iconFont);
-        viewHolder.buttonIsEnabled.setSelected(isEnabled);
+        viewHolder.buttonIsEnabled.setSelected(alarm.isEnabled());
 
         viewHolder.buttonIsEnabled.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,8 +104,6 @@ public class AlarmListAdapter extends ArrayAdapter<Alarm> implements ListAdapter
                 mBus.post(new AlarmToggleEnabledEvent(position));
             }
         });
-
-        return convertView;
     }
 
     @ColorInt
@@ -89,6 +114,8 @@ public class AlarmListAdapter extends ArrayAdapter<Alarm> implements ListAdapter
     public static class ViewHolder {
         @Bind(R.id.item_alarm_when) TextView textViewWhen;
         @Bind(R.id.item_alarm_repeat) TextView textViewRepeat;
+        @Bind(R.id.item_alarm_sub_separator) TextView textViewSubSeparator;
+        @Bind(R.id.item_alarm_label) TextView textViewLabel;
         @Bind(R.id.item_alarm_is_enabled) Button buttonIsEnabled;
 
         public ViewHolder(View view) {
