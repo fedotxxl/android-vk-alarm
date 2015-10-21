@@ -31,15 +31,17 @@ public class SongsSelectDialog implements AdapterView.OnItemClickListener {
 
     private Activity context;
     private VkSongManager vkSongManager;
+    private SelectedListener selectedListener;
 
     private List<VkSong> songsDisplayed = new ArrayList<>();
 
     private AlertDialog dialog = null;
     private SongsSelectDialog.ViewHolder viewHolder;
 
-    public SongsSelectDialog(VkSongManager vkSongManager, Activity context) {
+    public SongsSelectDialog(VkSongManager vkSongManager, Activity context, SelectedListener selectedListener) {
         this.vkSongManager = vkSongManager;
         this.context = context;
+        this.selectedListener = selectedListener;
     }
 
     public void open() {
@@ -68,14 +70,15 @@ public class SongsSelectDialog implements AdapterView.OnItemClickListener {
         myDialog.setNeutralButton("set random", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
+                selectedListener.onSongSelected(null);
+                closeDialog();
             }
         });
         myDialog.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
+                closeDialog();
             }
         });
 
@@ -132,11 +135,12 @@ public class SongsSelectDialog implements AdapterView.OnItemClickListener {
 
     @Override
     public void onItemClick(AdapterView arg0, View arg1, int position, long arg3) {
+        selectedListener.onSongSelected(songsDisplayed.get(position));
+        closeDialog();
+    }
+
+    private void closeDialog() {
         dialog.dismiss();
-
-        VkSong song = songsDisplayed.get(position);
-
-        Log.e("A", song.getTitle());
     }
 
     public static class ViewHolder {
@@ -152,5 +156,11 @@ public class SongsSelectDialog implements AdapterView.OnItemClickListener {
         public ViewHolder(View view) {
             ButterKnife.bind(this, view);
         }
+    }
+
+    public interface SelectedListener {
+
+        void onSongSelected(VkSong song);
+
     }
 }

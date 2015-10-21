@@ -2,6 +2,7 @@ package io.belov.vk.alarm;
 
 import io.belov.vk.alarm.persistence.Alarm;
 import io.belov.vk.alarm.utils.StringUtils;
+import io.belov.vk.alarm.vk.VkSong;
 
 /**
  * Created by fbelov on 19.10.15.
@@ -64,5 +65,17 @@ public class AlarmWrapper {
     public void setWhen(int hourOfDay, int minute) {
         alarm.setWhenHours(hourOfDay);
         alarm.setWhenMinutes(minute);
+    }
+
+    public void setSong(VkSong song) {
+        if (song == null) {
+            alarm.setSongId(null);
+            alarm.setSongTitle(null);
+            alarm.setSongBandName(null);
+        } else {
+            alarm.setSongId(String.valueOf(song.getId()));
+            alarm.setSongTitle(song.getTitle());
+            alarm.setSongBandName(song.getArtist());
+        }
     }
 }

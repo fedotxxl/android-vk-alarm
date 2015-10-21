@@ -40,6 +40,7 @@ import static io.belov.vk.alarm.Config.EXTRA_ALARM_ID;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.belov.vk.alarm.vk.VkSong;
 import io.belov.vk.alarm.vk.VkSongManager;
 
 public class AlarmEditActivity extends BaseAppCompatActivity {
@@ -48,6 +49,7 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
 
     private Alarm mAlarm;
     private AlarmWrapper alarmWrapper;
+    private SongsSelectDialog songsSelectDialog;
 
     @Inject
     AlarmManager mAlarmManager;
@@ -117,6 +119,12 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
 
         mAlarm = new Alarm(mAlarmManager.find(IntentUtils.getInt(getIntent(), EXTRA_ALARM_ID)));
         alarmWrapper = new AlarmWrapper(mAlarm);
+        songsSelectDialog = new SongsSelectDialog(vkSongManager, this, new SongsSelectDialog.SelectedListener() {
+            @Override
+            public void onSongSelected(VkSong song) {
+                setSong(song);
+            }
+        });
 
         setupActionBar();
         setupListeners();
@@ -189,12 +197,10 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
     }
 
     private void setupSongListener() {
-        final Activity activity = this;
-
         songTitleTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new SongsSelectDialog(vkSongManager, activity).open();
+                songsSelectDialog.open();
             }
         });
     }
@@ -358,6 +364,11 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
                 })
                 .setNegativeButton(R.string.dialog_button_cancel, null)
                 .show();
+    }
+
+    private void setSong(VkSong song) {
+        alarmWrapper.setSong(song);
+        setupUiSong();
     }
 
     private void delete() {
