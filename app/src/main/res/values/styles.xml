@@ -23,6 +23,15 @@
         <item name="android:layout_height">@dimen/btn_default</item>
     </style>
 
+    <style name="thin_text_h3">
+        <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+    <style name="thin_text_h4">
+        <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
     <style name="list_item_when">
         <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textSize">48sp</item>

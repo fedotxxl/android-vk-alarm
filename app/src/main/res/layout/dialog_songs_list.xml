@@ -6,10 +6,15 @@
     android:orientation="vertical">
 
     <TextView
+        style="@style/thin_text_h3"
         android:id="@+id/selectSongLoading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/songs_select_dialog_loading"
+        android:paddingTop="@dimen/dp_64"
+        android:paddingBottom="@dimen/dp_64"
+        android:paddingLeft="@dimen/dp_8"
+        android:paddingRight="@dimen/dp_8"
         android:gravity="center">
     </TextView>
 
@@ -20,9 +25,11 @@
         android:orientation="vertical">
 
         <EditText
+            style="@style/thin_text_h3"
             android:id="@+id/selectSongFilter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp_8"
             android:hint="@string/songs_select_dialog_filter_hint" />
 
         <ListView
