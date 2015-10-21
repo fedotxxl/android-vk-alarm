@@ -8,7 +8,12 @@ import com.vk.sdk.api.VKParameters;
 import com.vk.sdk.api.VKRequest;
 import com.vk.sdk.api.VKResponse;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.belov.vk.alarm.utils.RandomUtils;
 
@@ -18,6 +23,9 @@ import io.belov.vk.alarm.utils.RandomUtils;
 public class VkSongManager {
 
     private static final String TAG = "VkSongManager";
+
+    private List<VkSong> songsAllCache = new ArrayList<>();
+    private int songsCount = -1;
 
     public VKRequest getRandom(int maxOffset, final VkSongListener listener) {
         VKRequest request = VKApi.audio().get(VKParameters.from("offset", RandomUtils.R.nextInt(maxOffset), "count", 1));
@@ -71,5 +79,58 @@ public class VkSongManager {
         return request;
     }
 
+    public VKRequest getAllSongs(final VkSongsListeners listener) {
+        VKRequest request = VKApi.audio().get();
 
+        request.executeWithListener(new VKRequest.VKRequestListener() {
+            @Override
+            public void onComplete(VKResponse response) {
+                try {
+                    JSONObject jsonResponse = response.json.getJSONObject("response");
+
+                    if (jsonResponse != null) {
+                        songsAllCache = getSongs(jsonResponse.getJSONArray("items"));
+                        songsCount = jsonResponse.getInt("count");
+
+                        listener.on(songsCount, songsAllCache);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "getAllSongs", e);
+                }
+            }
+
+            @Override
+            public void onError(VKError error) {
+                Log.e(TAG, error.toString());
+            }
+        });
+
+        return request;
+    }
+
+    public void getAllOrCachedSongs(VkSongsListeners listener) {
+        if (songsCount < 0) {
+            getAllSongs(listener);
+        } else {
+            listener.on(songsCount, songsAllCache);
+        }
+    }
+
+    public List<VkSong> getAllCachedSongs() {
+        return songsAllCache;
+    }
+
+    public int getAllCachedSongsCount() {
+        return songsCount;
+    }
+
+    private List<VkSong> getSongs(JSONArray array) throws JSONException {
+        List<VkSong> songs = new ArrayList<>(array.length());
+
+        for (int i = 0; i < array.length(); i++) {
+            songs.add(new VkSong((JSONObject) array.get(i)));
+        }
+
+        return songs;
+    }
 }

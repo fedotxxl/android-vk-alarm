@@ -42,7 +42,7 @@ public class AlarmWrapper {
     }
 
     public boolean hasLabel() {
-        return StringUtils.isEmpty(alarm.getLabel());
+        return StringUtils.isNotEmpty(alarm.getLabel());
     }
 
     public boolean isRepeatActive(Alarm.Repeat repeat) {

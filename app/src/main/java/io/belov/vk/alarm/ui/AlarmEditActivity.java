@@ -1,5 +1,6 @@
 package io.belov.vk.alarm.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -39,6 +40,7 @@ import static io.belov.vk.alarm.Config.EXTRA_ALARM_ID;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.belov.vk.alarm.vk.VkSongManager;
 
 public class AlarmEditActivity extends BaseAppCompatActivity {
 
@@ -51,6 +53,8 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
     AlarmManager mAlarmManager;
     @Inject
     Bus mBus;
+    @Inject
+    VkSongManager vkSongManager;
 
     Map<Alarm.Repeat, Button> repeatButtonsByEnum;
 
@@ -179,8 +183,20 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
     private void setupListeners() {
         setupWhenListener();
         setupLabelListener();
+        setupSongListener();
         setupDisableComplexityListeners();
         setupRepeatListeners();
+    }
+
+    private void setupSongListener() {
+        final Activity activity = this;
+
+        songTitleTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new SongsSelectDialog(vkSongManager, activity).open();
+            }
+        });
     }
 
     private void setupWhenListener() {

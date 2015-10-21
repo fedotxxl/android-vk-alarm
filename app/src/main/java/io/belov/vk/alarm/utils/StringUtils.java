@@ -6,7 +6,10 @@ package io.belov.vk.alarm.utils;
 public class StringUtils {
 
     public static boolean isEmpty(String s) {
-        return s != null && !s.equals("");
+        return s == null || s.equals("");
     }
 
+    public static boolean isNotEmpty(String s) {
+        return !isEmpty(s);
+    }
 }
