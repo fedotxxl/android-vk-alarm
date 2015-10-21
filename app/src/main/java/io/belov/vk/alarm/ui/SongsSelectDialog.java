@@ -8,13 +8,18 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import io.belov.vk.alarm.R;
 import io.belov.vk.alarm.vk.VkSong;
 import io.belov.vk.alarm.vk.VkSongManager;
 import io.belov.vk.alarm.vk.VkSongsListeners;
@@ -30,6 +35,7 @@ public class SongsSelectDialog implements AdapterView.OnItemClickListener {
     private List<VkSong> songsDisplayed = new ArrayList<>();
 
     private AlertDialog dialog = null;
+    private SongsSelectDialog.ViewHolder viewHolder;
 
     public SongsSelectDialog(VkSongManager vkSongManager, Activity context) {
         this.vkSongManager = vkSongManager;
@@ -38,19 +44,16 @@ public class SongsSelectDialog implements AdapterView.OnItemClickListener {
 
     public void open() {
         AlertDialog.Builder myDialog = new AlertDialog.Builder(context);
+        View view = context.getLayoutInflater().inflate(R.layout.dialog_songs_list, null);
 
-        final EditText editTextFilter = new EditText(context);
-        final ListView listViewSongs = new ListView(context);
-//        editText.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_search_white_24dp, 0, 0, 0);
-        editTextFilter.setHint("Filter songs...");
-        editTextFilter.clearFocus();
-        LinearLayout layout = new LinearLayout(context);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.addView(editTextFilter);
-        layout.addView(listViewSongs);
-        myDialog.setView(layout);
-        listViewSongs.setOnItemClickListener(this);
-        editTextFilter.addTextChangedListener(new TextWatcher() {
+        viewHolder = new ViewHolder(view);
+
+        updateLoadingSongsVisibility();
+
+        myDialog.setView(view);
+
+        viewHolder.listViewSongs.setOnItemClickListener(this);
+        viewHolder.editTextFilter.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
             }
 
@@ -59,7 +62,7 @@ public class SongsSelectDialog implements AdapterView.OnItemClickListener {
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 //editText.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                refreshDisplayedSongs(listViewSongs, editTextFilter);
+                refreshDisplayedSongs(viewHolder.listViewSongs, viewHolder.editTextFilter);
             }
         });
         myDialog.setNeutralButton("set random", new DialogInterface.OnClickListener() {
@@ -76,16 +79,24 @@ public class SongsSelectDialog implements AdapterView.OnItemClickListener {
             }
         });
 
-        refreshDisplayedSongs(listViewSongs, editTextFilter);
+        updateLoadingSongsVisibility();
 
         vkSongManager.getAllOrCachedSongs(new VkSongsListeners() {
             @Override
             public void on(int count, List<VkSong> songs) {
-                refreshDisplayedSongs(listViewSongs, editTextFilter);
+                refreshDisplayedSongs(viewHolder.listViewSongs, viewHolder.editTextFilter);
+                updateLoadingSongsVisibility();
             }
         });
 
         dialog = myDialog.show();
+    }
+
+    private void updateLoadingSongsVisibility() {
+        boolean hasAllCachedSongs = vkSongManager.hasAllCachedSongs();
+
+        viewHolder.selectSongItemsWithFilter.setVisibility(hasAllCachedSongs ? View.VISIBLE : View.GONE);
+        viewHolder.selectSongLoading.setVisibility(!hasAllCachedSongs ? View.VISIBLE : View.GONE);
     }
 
     private void refreshDisplayedSongs(ListView listViewSongs, EditText editTextFilter) {
@@ -126,5 +137,20 @@ public class SongsSelectDialog implements AdapterView.OnItemClickListener {
         VkSong song = songsDisplayed.get(position);
 
         Log.e("A", song.getTitle());
+    }
+
+    public static class ViewHolder {
+        @Bind(R.id.selectSongItemsWithFilter)
+        LinearLayout selectSongItemsWithFilter;
+        @Bind(R.id.selectSongLoading)
+        TextView selectSongLoading;
+        @Bind(R.id.selectSongFilter)
+        EditText editTextFilter;
+        @Bind(R.id.selectSongItems)
+        ListView listViewSongs;
+
+        public ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
     }
 }

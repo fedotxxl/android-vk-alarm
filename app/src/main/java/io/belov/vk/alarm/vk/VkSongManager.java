@@ -120,6 +120,10 @@ public class VkSongManager {
         return songsAllCache;
     }
 
+    public boolean hasAllCachedSongs() {
+        return songsCount >= 0;
+    }
+
     public int getAllCachedSongsCount() {
         return songsCount;
     }

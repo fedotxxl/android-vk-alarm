@@ -47,4 +47,7 @@
 
     <string name="delete_dialog_title">Delete</string>
     <string name="delete_dialog_message">Are you sure you want to delete this alarm?</string>
+
+    <string name="songs_select_dialog_loading">Loading your songs...</string>
+    <string name="songs_select_dialog_filter_hint">Filter songs...</string>
 </resources>

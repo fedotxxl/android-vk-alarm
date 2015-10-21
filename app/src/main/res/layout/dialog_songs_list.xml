@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/selectSongLoading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/songs_select_dialog_loading"
+        android:gravity="center">
+    </TextView>
+
+    <LinearLayout
+        android:id="@+id/selectSongItemsWithFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/selectSongFilter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/songs_select_dialog_filter_hint" />
+
+        <ListView
+            android:id="@+id/selectSongItems"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </ListView>
+    </LinearLayout>
+</LinearLayout>
