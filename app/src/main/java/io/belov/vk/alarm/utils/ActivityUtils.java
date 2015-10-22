@@ -3,7 +3,7 @@ package io.belov.vk.alarm.utils;
 import android.app.Activity;
 import android.content.Intent;
 
-import io.belov.vk.alarm.persistence.Alarm;
+import io.belov.vk.alarm.alarm.Alarm;
 import io.belov.vk.alarm.ui.AlarmEditActivity;
 import io.belov.vk.alarm.ui.AlarmListActivity;
 import io.belov.vk.alarm.ui.LoginActivity;

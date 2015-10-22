@@ -2,7 +2,7 @@ package io.belov.vk.alarm.alert;
 
 import java.io.Serializable;
 
-import io.belov.vk.alarm.persistence.Alarm;
+import io.belov.vk.alarm.alarm.Alarm;
 import io.belov.vk.alarm.utils.AlarmUtils;
 
 /**

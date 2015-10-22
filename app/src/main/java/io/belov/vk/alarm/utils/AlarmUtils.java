@@ -2,11 +2,8 @@ package io.belov.vk.alarm.utils;
 
 import android.content.Context;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.belov.vk.alarm.R;
-import io.belov.vk.alarm.persistence.Alarm;
+import io.belov.vk.alarm.alarm.Alarm;
 
 /**
  * Created by fbelov on 18.10.15.

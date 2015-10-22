@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import io.belov.vk.alarm.alarm.Alarm;
+
 public class AlarmDao implements AlarmDaoI {
 
     private static final AlarmListComparator ALARM_LIST_COMPARATOR = new AlarmListComparator();

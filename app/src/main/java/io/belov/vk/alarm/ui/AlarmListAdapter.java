@@ -17,7 +17,7 @@ import com.squareup.otto.Bus;
 import io.belov.vk.alarm.R;
 import io.belov.vk.alarm.bus.AlarmItemOpenEvent;
 import io.belov.vk.alarm.bus.AlarmToggleEnabledEvent;
-import io.belov.vk.alarm.persistence.Alarm;
+import io.belov.vk.alarm.alarm.Alarm;
 
 import java.util.List;
 

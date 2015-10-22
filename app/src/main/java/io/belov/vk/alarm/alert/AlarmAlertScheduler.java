@@ -5,7 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
-import io.belov.vk.alarm.persistence.Alarm;
+import io.belov.vk.alarm.alarm.Alarm;
 
 /**
  * Created by fbelov on 19.10.15.

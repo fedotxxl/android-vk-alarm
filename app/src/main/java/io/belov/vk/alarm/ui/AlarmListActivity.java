@@ -31,7 +31,7 @@ import io.belov.vk.alarm.bus.AlarmCreateEvent;
 import io.belov.vk.alarm.bus.AlarmEvent;
 import io.belov.vk.alarm.bus.AlarmItemOpenEvent;
 import io.belov.vk.alarm.bus.AlarmToggleEnabledEvent;
-import io.belov.vk.alarm.persistence.Alarm;
+import io.belov.vk.alarm.alarm.Alarm;
 import io.belov.vk.alarm.persistence.AlarmDaoI;
 import io.belov.vk.alarm.utils.ActivityUtils;
 import io.belov.vk.alarm.utils.IntentUtils;
