@@ -1,5 +1,8 @@
 package io.belov.vk.alarm.persistence;
 
+import io.belov.vk.alarm.utils.StringUtils;
+import io.belov.vk.alarm.vk.VkSong;
+
 public class Alarm {
 
     private int id;
@@ -66,6 +69,67 @@ public class Alarm {
 
     public boolean hasSong() {
         return songId != 0;
+    }
+
+    public void setPropertiesFrom(Alarm data) {
+        setPropertiesFrom(data.getId(), data);
+    }
+
+    public void setPropertiesFrom(int id, Alarm data) {
+        this.id = id;
+
+        whenHours = data.getWhenHours();
+        whenMinutes = data.getWhenMinutes();
+        label = data.getLabel();
+        disableComplexity = data.getDisableComplexity();
+        repeat = data.getRepeat();
+        snoozeInMinutes = data.getSnoozeInMinutes();
+        isEnabled = data.isEnabled();
+        isVibrate = data.isVibrate();
+        songId = data.getSongId();
+        songTitle = data.getSongTitle();
+        songBandName = data.getSongBandName();
+    }
+
+    public int getWhenInMinutes() {
+        return whenHours*60 + whenMinutes;
+    }
+
+    public boolean hasLabel() {
+        return StringUtils.isNotEmpty(label);
+    }
+
+    public boolean isRepeatActive(Alarm.Repeat repeat) {
+        return repeat.isSupportedBy(this.repeat);
+    }
+
+    public void toggleRepeat(Alarm.Repeat repeat) {
+        int repeats = this.repeat;
+
+        if (isRepeatActive(repeat)) {
+            repeats -= repeat.getId();
+        } else {
+            repeats += repeat.getId();
+        }
+
+        this.repeat = repeats;
+    }
+
+    public void setWhen(int hourOfDay, int minute) {
+        this.whenHours = hourOfDay;
+        this.whenMinutes = minute;
+    }
+
+    public void setSong(int id, String title, String artist) {
+        this.songId = id;
+        this.songTitle = title;
+        this.songBandName = artist;
+    }
+
+    public void setSongRandom() {
+        songId = 0;
+        songTitle = null;
+        songBandName = null;
     }
 
     public enum DisableComplexity {

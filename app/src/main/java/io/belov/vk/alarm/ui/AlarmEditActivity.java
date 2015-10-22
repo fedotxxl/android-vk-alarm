@@ -17,7 +17,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import io.belov.vk.alarm.AlarmWrapper;
 import io.belov.vk.alarm.R;
 import io.belov.vk.alarm.bus.AlarmEvent;
 import io.belov.vk.alarm.persistence.Alarm;
@@ -47,7 +46,6 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
     public static final String TAG = AlarmEditActivity.class.getSimpleName();
 
     private Alarm mAlarm;
-    private AlarmWrapper alarmWrapper;
     private SongsSelectDialog songsSelectDialog;
 
     @Inject
@@ -117,7 +115,6 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
         postBind();
 
         mAlarm = new Alarm(mAlarmDao.find(IntentUtils.getInt(getIntent(), EXTRA_ALARM_ID)));
-        alarmWrapper = new AlarmWrapper(mAlarm);
         songsSelectDialog = new SongsSelectDialog(vkSongManager, this, new SongsSelectDialog.SelectedListener() {
             @Override
             public void onSongSelected(VkSong song) {
@@ -211,7 +208,7 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
                 TimeFragment fragment = new TimeFragment(new TimePickerDialogFragment.TimePickerDialogHandler() {
                     @Override
                     public void onDialogTimeSet(int reference, int hourOfDay, int minute) {
-                        alarmWrapper.setWhen(hourOfDay, minute);
+                        mAlarm.setWhen(hourOfDay, minute);
                         setupUiWhen();
                     }
                 });
@@ -270,7 +267,7 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
             e.getValue().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    alarmWrapper.toggleRepeat(repeat);
+                    mAlarm.toggleRepeat(repeat);
                     setupUiRepeat();
                 }
             });
@@ -341,7 +338,7 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
 
     private void setupUiRepeat() {
         for (Alarm.Repeat repeat : Alarm.Repeat.values()) {
-            repeatButtonsByEnum.get(repeat).setSelected(alarmWrapper.isRepeatActive(repeat));
+            repeatButtonsByEnum.get(repeat).setSelected(mAlarm.isRepeatActive(repeat));
         }
     }
 
@@ -366,7 +363,12 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
     }
 
     private void setSong(VkSong song) {
-        alarmWrapper.setSong(song);
+        if (song == null) {
+            mAlarm.setSongRandom();
+        } else {
+            mAlarm.setSong(song.getId(), song.getTitle(), song.getArtist());
+        }
+
         setupUiSong();
     }
 

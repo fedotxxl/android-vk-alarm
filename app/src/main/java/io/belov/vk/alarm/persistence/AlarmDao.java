@@ -10,8 +10,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import io.belov.vk.alarm.AlarmWrapper;
-
 public class AlarmDao implements AlarmDaoI {
 
     private static final AlarmListComparator ALARM_LIST_COMPARATOR = new AlarmListComparator();
@@ -122,7 +120,7 @@ public class AlarmDao implements AlarmDaoI {
 
         @Override
         public int compare(Alarm lhs, Alarm rhs) {
-            return new AlarmWrapper(lhs).getWhenInMinutes() - new AlarmWrapper(rhs).getWhenInMinutes();
+            return lhs.getWhenInMinutes() - rhs.getWhenInMinutes();
         }
 
     }
