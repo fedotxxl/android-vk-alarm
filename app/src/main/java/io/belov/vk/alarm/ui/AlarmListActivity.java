@@ -3,25 +3,13 @@ package io.belov.vk.alarm.ui;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v7.widget.Toolbar;
+import android.support.v4.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.support.v4.util.Pair;
 import android.widget.Toast;
-
-import io.belov.vk.alarm.R;
-import io.belov.vk.alarm.alert.AlarmAlertScheduler;
-import io.belov.vk.alarm.bus.AlarmCreateEvent;
-import io.belov.vk.alarm.bus.AlarmEvent;
-import io.belov.vk.alarm.bus.AlarmItemOpenEvent;
-import io.belov.vk.alarm.bus.AlarmToggleEnabledEvent;
-import io.belov.vk.alarm.persistence.Alarm;
-import io.belov.vk.alarm.persistence.AlarmManager;
-import io.belov.vk.alarm.utils.ActivityUtils;
-import io.belov.vk.alarm.utils.IntentUtils;
 
 import com.codetroopers.betterpickers.timepicker.TimePickerBuilder;
 import com.codetroopers.betterpickers.timepicker.TimePickerDialogFragment;
@@ -37,6 +25,16 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnItemLongClick;
+import io.belov.vk.alarm.R;
+import io.belov.vk.alarm.alert.AlarmAlertScheduler;
+import io.belov.vk.alarm.bus.AlarmCreateEvent;
+import io.belov.vk.alarm.bus.AlarmEvent;
+import io.belov.vk.alarm.bus.AlarmItemOpenEvent;
+import io.belov.vk.alarm.bus.AlarmToggleEnabledEvent;
+import io.belov.vk.alarm.persistence.Alarm;
+import io.belov.vk.alarm.persistence.AlarmManager;
+import io.belov.vk.alarm.utils.ActivityUtils;
+import io.belov.vk.alarm.utils.IntentUtils;
 
 public class AlarmListActivity extends BaseAppCompatActivity {
 
@@ -62,8 +60,6 @@ public class AlarmListActivity extends BaseAppCompatActivity {
         setContentView(R.layout.activity_alarm_list);
         ButterKnife.bind(this);
 
-        mBus.register(this);
-
         mList.addAll(mAlarmManager.findAll());
         mAdapter = new AlarmListAdapter(this, mList, mBus);
         mListView.setAdapter(mAdapter);
@@ -71,9 +67,17 @@ public class AlarmListActivity extends BaseAppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
+
         mBus.unregister(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        mBus.register(this);
     }
 
     @Override
@@ -178,7 +182,6 @@ public class AlarmListActivity extends BaseAppCompatActivity {
 
     @Subscribe
     public void onAlarmOpenEvent(AlarmItemOpenEvent event) {
-        finish();
         ActivityUtils.openAlarm(mAdapter.getItem(event.getPosition()), this);
     }
 }
