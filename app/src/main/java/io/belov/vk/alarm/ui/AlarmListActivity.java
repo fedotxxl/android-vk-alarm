@@ -32,7 +32,7 @@ import io.belov.vk.alarm.bus.AlarmEvent;
 import io.belov.vk.alarm.bus.AlarmItemOpenEvent;
 import io.belov.vk.alarm.bus.AlarmToggleEnabledEvent;
 import io.belov.vk.alarm.persistence.Alarm;
-import io.belov.vk.alarm.persistence.AlarmManager;
+import io.belov.vk.alarm.persistence.AlarmDaoI;
 import io.belov.vk.alarm.utils.ActivityUtils;
 import io.belov.vk.alarm.utils.IntentUtils;
 
@@ -44,7 +44,7 @@ public class AlarmListActivity extends BaseAppCompatActivity {
     private List<Alarm> mList = new ArrayList<>();
 
     @Inject
-    AlarmManager mAlarmManager;
+    AlarmDaoI mAlarmDaoI;
     @Inject
     Bus mBus;
     @Inject
@@ -60,7 +60,7 @@ public class AlarmListActivity extends BaseAppCompatActivity {
         setContentView(R.layout.activity_alarm_list);
         ButterKnife.bind(this);
 
-        mList.addAll(mAlarmManager.findAll());
+        mList.addAll(mAlarmDaoI.findAll());
         mAdapter = new AlarmListAdapter(this, mList, mBus);
         mListView.setAdapter(mAdapter);
         mListView.setEmptyView(mEmptyTextView);
@@ -151,7 +151,7 @@ public class AlarmListActivity extends BaseAppCompatActivity {
     @Subscribe
     public void onAlarmEvent(AlarmEvent event) {
         mList.clear();
-        mList.addAll(mAlarmManager.findAll());
+        mList.addAll(mAlarmDaoI.findAll());
         mAdapter.notifyDataSetChanged();
     }
 
@@ -163,7 +163,11 @@ public class AlarmListActivity extends BaseAppCompatActivity {
 
 
         Alarm alarm = mAdapter.getItem(event.getPosition());
-        mAlarmManager.update(alarm, !alarm.isEnabled());
+
+        alarm.toggleEnabled();
+
+        mAlarmDaoI.update(alarm);
+
         mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
     }
 
@@ -176,7 +180,7 @@ public class AlarmListActivity extends BaseAppCompatActivity {
         alarm.setWhenHours(event.getHourOfDay());
         alarm.setWhenMinutes(event.getMinute());
 
-        mAlarmManager.insert(alarm);
+        mAlarmDaoI.insert(alarm);
         mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
     }
 

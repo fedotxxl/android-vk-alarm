@@ -69,11 +69,11 @@ public class AlarmWrapper {
 
     public void setSong(VkSong song) {
         if (song == null) {
-            alarm.setSongId(null);
+            alarm.setSongId(0);
             alarm.setSongTitle(null);
             alarm.setSongBandName(null);
         } else {
-            alarm.setSongId(String.valueOf(song.getId()));
+            alarm.setSongId(song.getId());
             alarm.setSongTitle(song.getTitle());
             alarm.setSongBandName(song.getArtist());
         }

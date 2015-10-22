@@ -11,7 +11,7 @@ import dagger.Provides;
 public class PersistenceModule {
 
     @Provides @Singleton
-    public AlarmManager provideAlarmManager(Context context) {
-        return new AlarmRealmManager(context);
+    public AlarmDaoI provideAlarmManager(Context context) {
+        return new AlarmDao(context);
     }
 }

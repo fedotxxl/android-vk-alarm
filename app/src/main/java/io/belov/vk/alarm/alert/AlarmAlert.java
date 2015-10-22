@@ -17,7 +17,7 @@ public class AlarmAlert implements Serializable {
     private int snoozeInMinutes;
     private boolean isVibrate;
 
-    private String songId;
+    private int songId;
     private String songTitle;
     private String songBandName;
 
@@ -52,7 +52,7 @@ public class AlarmAlert implements Serializable {
         return isVibrate;
     }
 
-    public String getSongId() {
+    public int getSongId() {
         return songId;
     }
 

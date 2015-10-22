@@ -1,8 +1,6 @@
 package io.belov.vk.alarm.persistence;
 
-import io.realm.RealmObject;
-
-public class Alarm extends RealmObject {
+public class Alarm {
 
     private int id;
     private int whenHours;
@@ -14,7 +12,7 @@ public class Alarm extends RealmObject {
     private boolean isVibrate;
     private String label;
 
-    private String songId;
+    private int songId;
     private String songTitle;
     private String songBandName;
 
@@ -53,6 +51,22 @@ public class Alarm extends RealmObject {
 //        this.completed = completed;
 //    }
 //}
+
+    public void setIsEnabled(int isEnabled) {
+        this.isEnabled = (isEnabled != 0);
+    }
+
+    public void setIsVibrate(int isVibrate) {
+        this.isVibrate = (isVibrate != 0);
+    }
+
+    public void toggleEnabled() {
+        this.isEnabled = !isEnabled;
+    }
+
+    public boolean hasSong() {
+        return songId != 0;
+    }
 
     public enum DisableComplexity {
         EASY(1), MEDIUM(2), HARD(3);
@@ -160,11 +174,11 @@ public class Alarm extends RealmObject {
         this.isVibrate = isVibrate;
     }
 
-    public String getSongId() {
+    public int getSongId() {
         return songId;
     }
 
-    public void setSongId(String songId) {
+    public void setSongId(int songId) {
         this.songId = songId;
     }
 

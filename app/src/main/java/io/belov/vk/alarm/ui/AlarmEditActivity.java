@@ -1,6 +1,5 @@
 package io.belov.vk.alarm.ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,7 +21,7 @@ import io.belov.vk.alarm.AlarmWrapper;
 import io.belov.vk.alarm.R;
 import io.belov.vk.alarm.bus.AlarmEvent;
 import io.belov.vk.alarm.persistence.Alarm;
-import io.belov.vk.alarm.persistence.AlarmManager;
+import io.belov.vk.alarm.persistence.AlarmDaoI;
 import io.belov.vk.alarm.utils.ActivityUtils;
 import io.belov.vk.alarm.utils.AlarmUtils;
 import io.belov.vk.alarm.utils.IntentUtils;
@@ -52,7 +51,7 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
     private SongsSelectDialog songsSelectDialog;
 
     @Inject
-    AlarmManager mAlarmManager;
+    AlarmDaoI mAlarmDao;
     @Inject
     Bus mBus;
     @Inject
@@ -117,7 +116,7 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
         ButterKnife.bind(this);
         postBind();
 
-        mAlarm = new Alarm(mAlarmManager.find(IntentUtils.getInt(getIntent(), EXTRA_ALARM_ID)));
+        mAlarm = new Alarm(mAlarmDao.find(IntentUtils.getInt(getIntent(), EXTRA_ALARM_ID)));
         alarmWrapper = new AlarmWrapper(mAlarm);
         songsSelectDialog = new SongsSelectDialog(vkSongManager, this, new SongsSelectDialog.SelectedListener() {
             @Override
@@ -304,12 +303,12 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
         String songTitle;
         String songArtist;
 
-        if (mAlarm.getSongId() == null) {
-            songTitle = getString(R.string.alarm_edit_random);
-            songArtist = null;
-        } else {
+        if (mAlarm.hasSong()) {
             songTitle = mAlarm.getSongTitle();
             songArtist = mAlarm.getSongBandName();
+        } else {
+            songTitle = getString(R.string.alarm_edit_random);
+            songArtist = null;
         }
 
         songTitleTextView.setText(songTitle);
@@ -372,12 +371,12 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
     }
 
     private void delete() {
-        mAlarmManager.delete(mAlarm.getId());
+        mAlarmDao.delete(mAlarm.getId());
         mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
     }
 
     private void save() {
-        mAlarmManager.findAndUpdate(mAlarm);
+        mAlarmDao.update(mAlarm);
         mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
     }
 
