@@ -14,8 +14,6 @@ import io.belov.vk.alarm.alarm.Alarm;
 
 public class AlarmDao implements AlarmDaoI {
 
-    private static final AlarmListComparator ALARM_LIST_COMPARATOR = new AlarmListComparator();
-
     private SQLiteDatabase db;
 
     public AlarmDao(Context context) {
@@ -44,12 +42,11 @@ public class AlarmDao implements AlarmDaoI {
         if (cursor != null && cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
                 answer.add(getAlarmFromCursor(cursor));
+                cursor.moveToNext();
             }
 
             cursor.close();
         }
-
-        Collections.sort(answer, ALARM_LIST_COMPARATOR);
 
         return answer;
     }
@@ -86,8 +83,8 @@ public class AlarmDao implements AlarmDaoI {
 
         alarm.setId(cursor.getInt(cursor.getColumnIndex(AlarmDatabase.ID)));
         alarm.setWhenHours(cursor.getInt(cursor.getColumnIndex(AlarmDatabase.COL_WHEN_HOURS)));
-        alarm.setWhenMinutes(cursor.getInt(cursor.getColumnIndex(AlarmDatabase.COL_DISABLE_COMPLEXITY)));
-        alarm.setDisableComplexity(cursor.getInt(cursor.getColumnIndex(AlarmDatabase.ID)));
+        alarm.setWhenMinutes(cursor.getInt(cursor.getColumnIndex(AlarmDatabase.COL_WHEN_MINUTES)));
+        alarm.setDisableComplexity(cursor.getInt(cursor.getColumnIndex(AlarmDatabase.COL_DISABLE_COMPLEXITY)));
         alarm.setRepeat(cursor.getInt(cursor.getColumnIndex(AlarmDatabase.COL_REPEAT)));
         alarm.setSnoozeInMinutes(cursor.getInt(cursor.getColumnIndex(AlarmDatabase.COL_SNOOZE_IN_MINUTES)));
         alarm.setIsEnabled(cursor.getInt(cursor.getColumnIndex(AlarmDatabase.COL_ENABLED)));
@@ -116,14 +113,5 @@ public class AlarmDao implements AlarmDaoI {
         values.put(AlarmDatabase.COL_SONG_ARTIST, alarm.getSongBandName());
 
         return values;
-    }
-
-    private static class AlarmListComparator implements Comparator<Alarm> {
-
-        @Override
-        public int compare(Alarm lhs, Alarm rhs) {
-            return lhs.getWhenInMinutes() - rhs.getWhenInMinutes();
-        }
-
     }
 }

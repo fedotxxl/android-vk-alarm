@@ -26,12 +26,16 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnItemLongClick;
 import io.belov.vk.alarm.R;
+import io.belov.vk.alarm.alarm.AlarmManager;
 import io.belov.vk.alarm.alert.AlarmAlertScheduler;
 import io.belov.vk.alarm.bus.AlarmCreateEvent;
+import io.belov.vk.alarm.bus.AlarmDeletedEvent;
 import io.belov.vk.alarm.bus.AlarmEvent;
+import io.belov.vk.alarm.bus.AlarmInsertedEvent;
 import io.belov.vk.alarm.bus.AlarmItemOpenEvent;
 import io.belov.vk.alarm.bus.AlarmToggleEnabledEvent;
 import io.belov.vk.alarm.alarm.Alarm;
+import io.belov.vk.alarm.bus.AlarmUpdatedEvent;
 import io.belov.vk.alarm.persistence.AlarmDaoI;
 import io.belov.vk.alarm.utils.ActivityUtils;
 import io.belov.vk.alarm.utils.IntentUtils;
@@ -44,7 +48,7 @@ public class AlarmListActivity extends BaseAppCompatActivity {
     private List<Alarm> mList = new ArrayList<>();
 
     @Inject
-    AlarmDaoI mAlarmDaoI;
+    AlarmManager alarmManager;
     @Inject
     Bus mBus;
     @Inject
@@ -60,10 +64,17 @@ public class AlarmListActivity extends BaseAppCompatActivity {
         setContentView(R.layout.activity_alarm_list);
         ButterKnife.bind(this);
 
-        mList.addAll(mAlarmDaoI.findAll());
+        mList.addAll(alarmManager.findAll());
         mAdapter = new AlarmListAdapter(this, mList, mBus);
         mListView.setAdapter(mAdapter);
         mListView.setEmptyView(mEmptyTextView);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        mBus.register(this);
     }
 
     @Override
@@ -73,12 +84,6 @@ public class AlarmListActivity extends BaseAppCompatActivity {
         mBus.unregister(this);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        mBus.register(this);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -149,26 +154,36 @@ public class AlarmListActivity extends BaseAppCompatActivity {
     }
 
     @Subscribe
-    public void onAlarmEvent(AlarmEvent event) {
+    public void onAlarmEvent(AlarmInsertedEvent event) {
+        onAlarmChanged();
+    }
+
+    @Subscribe
+    public void onAlarmEvent(AlarmUpdatedEvent event) {
+        onAlarmChanged();
+    }
+
+    @Subscribe
+    public void onAlarmEvent(AlarmDeletedEvent event) {
+        onAlarmChanged();
+    }
+
+    private void onAlarmChanged() {
         mList.clear();
-        mList.addAll(mAlarmDaoI.findAll());
+        mList.addAll(alarmManager.findAll());
         mAdapter.notifyDataSetChanged();
     }
 
     @Subscribe
     public void onAlarmToggleEnabledEvent(AlarmToggleEnabledEvent event) {
-
         alertScheduler.schedule(mAdapter.getItem(event.getPosition()));
         Toast.makeText(this, "Scheduled!", Toast.LENGTH_LONG).show();
-
 
         Alarm alarm = mAdapter.getItem(event.getPosition());
 
         alarm.toggleEnabled();
 
-        mAlarmDaoI.update(alarm);
-
-        mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
+        alarmManager.update(alarm);
     }
 
     @Subscribe
@@ -180,8 +195,7 @@ public class AlarmListActivity extends BaseAppCompatActivity {
         alarm.setWhenHours(event.getHourOfDay());
         alarm.setWhenMinutes(event.getMinute());
 
-        mAlarmDaoI.insert(alarm);
-        mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
+        alarmManager.insert(alarm);
     }
 
     @Subscribe

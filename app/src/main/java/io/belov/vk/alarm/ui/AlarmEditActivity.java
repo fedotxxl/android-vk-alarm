@@ -17,29 +17,26 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import io.belov.vk.alarm.R;
-import io.belov.vk.alarm.bus.AlarmEvent;
-import io.belov.vk.alarm.alarm.Alarm;
-import io.belov.vk.alarm.persistence.AlarmDaoI;
-import io.belov.vk.alarm.utils.ActivityUtils;
-import io.belov.vk.alarm.utils.AlarmUtils;
-import io.belov.vk.alarm.utils.IntentUtils;
-
 import com.codetroopers.betterpickers.timepicker.TimePickerBuilder;
 import com.codetroopers.betterpickers.timepicker.TimePickerDialogFragment;
-import com.squareup.otto.Bus;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import static io.belov.vk.alarm.Config.EXTRA_ALARM_ID;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.belov.vk.alarm.R;
+import io.belov.vk.alarm.alarm.Alarm;
+import io.belov.vk.alarm.alarm.AlarmManager;
+import io.belov.vk.alarm.utils.ActivityUtils;
+import io.belov.vk.alarm.utils.AlarmUtils;
+import io.belov.vk.alarm.utils.IntentUtils;
 import io.belov.vk.alarm.vk.VkSong;
 import io.belov.vk.alarm.vk.VkSongManager;
+
+import static io.belov.vk.alarm.Config.EXTRA_ALARM_ID;
 
 public class AlarmEditActivity extends BaseAppCompatActivity {
 
@@ -49,9 +46,7 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
     private SongsSelectDialog songsSelectDialog;
 
     @Inject
-    AlarmDaoI mAlarmDao;
-    @Inject
-    Bus mBus;
+    AlarmManager alarmManager;
     @Inject
     VkSongManager vkSongManager;
 
@@ -114,7 +109,7 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
         ButterKnife.bind(this);
         postBind();
 
-        mAlarm = new Alarm(mAlarmDao.find(IntentUtils.getInt(getIntent(), EXTRA_ALARM_ID)));
+        mAlarm = new Alarm(alarmManager.find(IntentUtils.getInt(getIntent(), EXTRA_ALARM_ID)));
         songsSelectDialog = new SongsSelectDialog(vkSongManager, this, new SongsSelectDialog.SelectedListener() {
             @Override
             public void onSongSelected(VkSong song) {
@@ -373,13 +368,11 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
     }
 
     private void delete() {
-        mAlarmDao.delete(mAlarm.getId());
-        mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
+        alarmManager.delete(mAlarm.getId());
     }
 
     private void save() {
-        mAlarmDao.update(mAlarm);
-        mBus.post(new AlarmEvent(AlarmEvent.QUERY_UPDATE));
+        alarmManager.update(mAlarm);
     }
 
     private void close() {
