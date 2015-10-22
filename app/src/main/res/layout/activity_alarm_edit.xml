@@ -30,20 +30,26 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/alarm_edit_label"/>
 
-            <TextView
-                style="@style/alarm_edit_song_title"
-                android:id="@+id/alarm_edit_song_title"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                style="@style/alarm_edit_song_container"
+                android:id="@+id/alarm_edit_song_container"
                 android:layout_height="wrap_content"
-                tools:text="Bohemian Rhapsody" />
+                android:layout_width="match_parent"
+                android:orientation="vertical">
+                <TextView
+                    style="@style/alarm_edit_song_title"
+                    android:id="@+id/alarm_edit_song_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="Bohemian Rhapsody" />
 
-            <TextView
-                style="@style/alarm_edit_song_artist"
-                android:id="@+id/alarm_edit_song_artist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="The Queen"/>
-
+                <TextView
+                    style="@style/alarm_edit_song_artist"
+                    android:id="@+id/alarm_edit_song_artist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="The Queen"/>
+            </LinearLayout>
 
             <TextView
                 style="@style/alarm_edit_label"

@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.codetroopers.betterpickers.timepicker.TimePickerBuilder;
@@ -57,6 +58,9 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
 
     @Bind(R.id.alarm_edit_label)
     EditText labelEditText;
+
+    @Bind(R.id.alarm_edit_song_container)
+    LinearLayout linearLayoutSongContainer;
 
     @Bind(R.id.alarm_edit_song_title)
     TextView songTitleTextView;
@@ -188,7 +192,7 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
     }
 
     private void setupSongListener() {
-        songTitleTextView.setOnClickListener(new View.OnClickListener() {
+        linearLayoutSongContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 songsSelectDialog.open();

@@ -90,15 +90,20 @@
         <item name="android:paddingBottom">@dimen/alarm_edit_vertical_margin_x1.5</item>
     </style>
 
+    <style name="alarm_edit_song_container">
+        <item name="android:padding">@dimen/dp_10</item>
+        <item name="android:gravity">center</item>
+    </style>
+
     <style name="alarm_edit_label_input" parent="alarm_edit_text">
 
     </style>
 
-    <style name="alarm_edit_song_title" parent="alarm_edit_text">
+    <style name="alarm_edit_song_title" parent="thin_text_h3">
 
     </style>
 
-    <style name="alarm_edit_song_artist" parent="alarm_edit_text">
+    <style name="alarm_edit_song_artist" parent="thin_text_h4">
 
     </style>
 
