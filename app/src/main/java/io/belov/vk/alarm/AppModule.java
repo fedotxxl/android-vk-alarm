@@ -38,7 +38,7 @@ public class AppModule {
     }
 
     @Provides @Singleton
-    public AlarmManager provideAlarmManager(Bus bus, AlarmDaoI dao) {
-        return new AlarmManager(bus, dao);
+    public AlarmManager provideAlarmManager(Bus bus, AlarmDaoI dao, AlarmAlertScheduler alertScheduler) {
+        return new AlarmManager(bus, dao, alertScheduler);
     }
 }

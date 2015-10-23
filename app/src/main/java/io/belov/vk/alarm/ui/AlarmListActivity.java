@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.codetroopers.betterpickers.timepicker.TimePickerBuilder;
 import com.codetroopers.betterpickers.timepicker.TimePickerDialogFragment;
@@ -27,7 +26,6 @@ import butterknife.ButterKnife;
 import butterknife.OnItemLongClick;
 import io.belov.vk.alarm.R;
 import io.belov.vk.alarm.alarm.AlarmManager;
-import io.belov.vk.alarm.alert.AlarmAlertScheduler;
 import io.belov.vk.alarm.bus.AlarmCreateEvent;
 import io.belov.vk.alarm.bus.AlarmDeletedEvent;
 import io.belov.vk.alarm.bus.AlarmInsertedEvent;
@@ -49,8 +47,6 @@ public class AlarmListActivity extends BaseAppCompatActivity {
     AlarmManager alarmManager;
     @Inject
     Bus mBus;
-    @Inject
-    AlarmAlertScheduler alertScheduler;
 
     @Bind(R.id.alarm_list_listview) ListView mListView;
     @Bind(R.id.alarm_list_empty_view) TextView mEmptyTextView;
@@ -174,9 +170,6 @@ public class AlarmListActivity extends BaseAppCompatActivity {
 
     @Subscribe
     public void onAlarmToggleEnabledEvent(AlarmToggleEnabledEvent event) {
-        alertScheduler.schedule(mAdapter.getItem(event.getPosition()));
-        Toast.makeText(this, "Scheduled!", Toast.LENGTH_LONG).show();
-
         Alarm alarm = mAdapter.getItem(event.getPosition());
 
         alarm.toggleEnabled();

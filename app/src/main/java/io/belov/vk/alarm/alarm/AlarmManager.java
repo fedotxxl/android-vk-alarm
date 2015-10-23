@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import io.belov.vk.alarm.alert.AlarmAlertScheduler;
 import io.belov.vk.alarm.bus.AlarmDeletedEvent;
 import io.belov.vk.alarm.bus.AlarmInsertedEvent;
 import io.belov.vk.alarm.bus.AlarmUpdatedEvent;
@@ -20,10 +21,12 @@ public class AlarmManager {
 
     private Bus bus;
     private AlarmDaoI dao;
+    private AlarmAlertScheduler alertScheduler;
 
-    public AlarmManager(Bus bus, AlarmDaoI dao) {
+    public AlarmManager(Bus bus, AlarmDaoI dao, AlarmAlertScheduler alertScheduler) {
         this.bus = bus;
         this.dao = dao;
+        this.alertScheduler = alertScheduler;
     }
 
     public Alarm find(int id) {
@@ -40,17 +43,28 @@ public class AlarmManager {
 
     public void insert(Alarm alarm) {
         dao.insert(alarm);
+        alertScheduler.schedule(alarm);
         bus.post(new AlarmInsertedEvent(alarm));
     }
 
     public void update(Alarm alarm) {
         dao.update(alarm);
+        alertScheduler.schedule(alarm);
         bus.post(new AlarmUpdatedEvent(alarm));
     }
 
     public void delete(int id) {
         dao.delete(id);
+        alertScheduler.unschedule(id);
         bus.post(new AlarmDeletedEvent(id));
+    }
+
+    public void rescheduleAllAlarms() {
+        List<Alarm> alarms = findAll();
+
+        for (Alarm alarm : alarms) {
+            alertScheduler.schedule(alarm);
+        }
     }
 
     private static class AlarmListComparator implements Comparator<Alarm> {
