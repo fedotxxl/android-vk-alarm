@@ -75,7 +75,8 @@
         <activity
             android:name = ".alert.AlarmAlertActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Holo.Light.NoActionBar.Fullscreen">
         </activity>
 
         <receiver android:name="io.belov.vk.alarm.alert.AlarmAlertBroadcastReceiver" />

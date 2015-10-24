@@ -28,4 +28,8 @@
     <drawable name="pressedGray">#0a000000</drawable>
     <drawable name="selectedGray">#14000000</drawable>
 
+    <color name="lightGrayBackground">#e9e9e9</color>
+    <color name="circleProgressC1">#FFFF0000</color>
+    <color name="circleProgressC2">#FFFFFF00</color>
+    <color name="circleProgressC3">#00a600</color>
 </resources>

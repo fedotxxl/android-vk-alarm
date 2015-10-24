@@ -11,7 +11,7 @@ import io.belov.vk.alarm.alarm.Alarm;
 public class AlarmUtils {
 
     public static String getWhenAsString(Alarm alarm) {
-        return String.format("%02d:%02d", alarm.getWhenHours(), alarm.getWhenMinutes());
+        return TimeUtils.getWhenAsString(alarm.getWhenHours(), alarm.getWhenMinutes());
     }
 
     public static String getRepeatAsString(Context context, Alarm alarm) {

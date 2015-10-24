@@ -55,4 +55,10 @@
     <!--http://stackoverflow.com/questions/33236333/how-to-set-menu-buttons-height-same-as-actionbar-height/33237016#33237016-->
     <dimen name="abc_action_button_min_height_material" tools:override="true">@dimen/abc_action_bar_default_height_material</dimen>
     <dimen name="abc_action_button_min_width_material" tools:override="true">@dimen/abc_action_bar_default_height_material</dimen>
+
+    <dimen name="alarm_alert_circle">180dp</dimen>
+    <dimen name="alarm_alert_circle_bar_width">10dp</dimen>
+    <dimen name="alarm_alert_circle_contour">160dp</dimen>
+    <dimen name="alarm_alert_circle_contour_bar_width">1dp</dimen>
+    <dimen name="alarm_alert_profile">150dp</dimen>
 </resources>

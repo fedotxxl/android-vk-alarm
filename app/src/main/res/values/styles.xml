@@ -23,13 +23,29 @@
         <item name="android:layout_height">@dimen/btn_default</item>
     </style>
 
+    <style name="thin_text_h1">
+        <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:textSize">38sp</item>
+    </style>
+
+    <style name="thin_text_h2">
+        <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:textSize">28sp</item>
+    </style>
+
     <style name="thin_text_h3">
         <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textSize">24sp</item>
     </style>
+
     <style name="thin_text_h4">
         <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="thin_text_h5">
+        <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="list_item_when">
@@ -109,6 +125,26 @@
 
     <style name="tool_bar_button" parent="Widget.AppCompat.ActionButton">
 
+    </style>
+
+    <style name="alarm_alert_circle">
+        <item name="android:layout_centerInParent">true</item>
+        <item name="cpv_maxValue">360</item>
+        <item name="cpv_rimWidth">0dp</item>
+        <item name="cpv_contourSize">0dp</item>
+        <item name="cpv_textSize">0dp</item>
+    </style>
+
+    <style name="alarm_alert_circle_main" parent="alarm_alert_circle">
+        <item name="android:layout_width">@dimen/alarm_alert_circle</item>
+        <item name="android:layout_height">@dimen/alarm_alert_circle</item>
+        <item name="cpv_barWidth">@dimen/alarm_alert_circle_bar_width</item>
+    </style>
+
+    <style name="alarm_alert_circle_contour" parent="alarm_alert_circle">
+        <item name="android:layout_width">@dimen/alarm_alert_circle_contour</item>
+        <item name="android:layout_height">@dimen/alarm_alert_circle_contour</item>
+        <item name="cpv_barWidth">@dimen/alarm_alert_circle_contour_bar_width</item>
     </style>
 
     <style name="tool_bar_divider">
