@@ -42,7 +42,12 @@ public class AlarmAlertScheduler {
     private void doSchedule(Alarm alarm) {
         PendingIntent pendingIntent = getPendingIntent(alarm);
 
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, getAlarmTime(alarm), AlarmManager.INTERVAL_DAY, pendingIntent);
+        if (alarm.isRepeating()) {
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, getAlarmTime(alarm), AlarmManager.INTERVAL_DAY, pendingIntent);
+            //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY * 7, pendingIntent);
+        } else {
+            alarmManager.set(AlarmManager.RTC_WAKEUP, getAlarmTime(alarm), pendingIntent);
+        }
     }
 
     private PendingIntent getPendingIntent(Alarm alarm) {

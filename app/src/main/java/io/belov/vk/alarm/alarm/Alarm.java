@@ -131,6 +131,10 @@ public class Alarm {
         songBandName = null;
     }
 
+    public boolean isRepeating() {
+        return repeat > 0;
+    }
+
     public enum DisableComplexity {
         EASY(1), MEDIUM(2), HARD(3);
 
