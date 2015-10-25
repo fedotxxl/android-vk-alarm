@@ -1,5 +1,6 @@
 package io.belov.vk.alarm.alarm;
 
+import io.belov.vk.alarm.DayOfWeek;
 import io.belov.vk.alarm.utils.StringUtils;
 
 public class Alarm {
@@ -102,6 +103,10 @@ public class Alarm {
         return repeat.isSupportedBy(this.repeat);
     }
 
+    public boolean isRepeatActive(DayOfWeek dayOfWeek) {
+        return Repeat.getRepeatForDay(dayOfWeek).isSupportedBy(this.repeat);
+    }
+
     public void toggleRepeat(Alarm.Repeat repeat) {
         int repeats = this.repeat;
 
@@ -172,6 +177,10 @@ public class Alarm {
 
         public boolean isSupportedBy(int repeats) {
             return ((repeats & id) != 0);
+        }
+
+        public static Repeat getRepeatForDay(DayOfWeek dayOfWeek) {
+            return valueOf(dayOfWeek.toString());
         }
     }
 

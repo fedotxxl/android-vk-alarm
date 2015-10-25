@@ -5,17 +5,20 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
-import com.squareup.otto.Subscribe;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
+import io.belov.vk.alarm.DayOfWeek;
 import io.belov.vk.alarm.alarm.Alarm;
-import io.belov.vk.alarm.bus.AlarmDeletedEvent;
-import io.belov.vk.alarm.bus.AlarmInsertedEvent;
-import io.belov.vk.alarm.bus.AlarmUpdatedEvent;
+import io.belov.vk.alarm.utils.CalendarUtils;
 
 /**
  * Created by fbelov on 19.10.15.
  */
 public class AlarmAlertScheduler {
+
+    public static final long INTERVAL_WEEK = AlarmManager.INTERVAL_DAY * 7;
 
     private Context context;
     private AlarmManager alarmManager;
@@ -33,36 +36,79 @@ public class AlarmAlertScheduler {
         }
     }
 
-    public void unschedule(int id) {
-        PendingIntent pendingIntent = getPendingIntent(id);
+    public void unschedule(int alarmId) {
+        doUnschedule(getId(alarmId));
 
-        alarmManager.cancel(pendingIntent);
-    }
-
-    private void doSchedule(Alarm alarm) {
-        PendingIntent pendingIntent = getPendingIntent(alarm);
-
-        if (alarm.isRepeating()) {
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, getAlarmTime(alarm), AlarmManager.INTERVAL_DAY, pendingIntent);
-            //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY * 7, pendingIntent);
-        } else {
-            alarmManager.set(AlarmManager.RTC_WAKEUP, getAlarmTime(alarm), pendingIntent);
+        for (DayOfWeek dayOfWeek : DayOfWeek.values()) {
+            doUnschedule(getId(alarmId, dayOfWeek));
         }
     }
 
-    private PendingIntent getPendingIntent(Alarm alarm) {
+    private void doSchedule(Alarm alarm) {
+        //schedule / unschedule 8 alarms - 7 days + non repeating one with null day
+
+        int alarmId = alarm.getId();
+
+        List<DayOfWeek> daysToSchedule = new ArrayList<>();
+        List<DayOfWeek> daysToUnschedule = new ArrayList<>();
+
+        if (alarm.isRepeating()) {
+            daysToUnschedule.add(null);
+
+            for (DayOfWeek dayOfWeek : DayOfWeek.values()) {
+                if (alarm.isRepeatActive(dayOfWeek)) {
+                    daysToSchedule.add(dayOfWeek);
+                } else {
+                    daysToUnschedule.add(dayOfWeek);
+                }
+            }
+        } else {
+            daysToSchedule.add(null);
+            Collections.addAll(daysToUnschedule, DayOfWeek.values());
+        }
+
+        for (DayOfWeek dayOfWeek : daysToSchedule) {
+            if (dayOfWeek == null) {
+                alarmManager.set(AlarmManager.RTC_WAKEUP, getAlarmTime(alarm, null), getPendingIntent(getId(alarmId), alarm));
+            } else {
+                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, getAlarmTime(alarm, dayOfWeek), INTERVAL_WEEK, getPendingIntent(getId(alarmId, dayOfWeek), alarm));
+            }
+        }
+
+        for (DayOfWeek dayOfWeek : daysToUnschedule) {
+            doUnschedule(getId(alarmId, dayOfWeek));
+        }
+    }
+
+    private long getAlarmTime(Alarm alarm, DayOfWeek dayOfWeek) {
+        return CalendarUtils.getCalendarForMoment(dayOfWeek, alarm.getWhenHours(), alarm.getWhenMinutes()).getTimeInMillis();
+    }
+
+    private void doUnschedule(int pendingIntentId) {
+        alarmManager.cancel(getPendingIntent(pendingIntentId));
+    }
+
+    private PendingIntent getPendingIntent(int id, Alarm alarm) {
         Intent myIntent = new Intent(context, AlarmAlertBroadcastReceiver.class);
         myIntent.putExtra("alarmAlert", new AlarmAlert(alarm));
 
-        return PendingIntent.getBroadcast(context, alarm.getId(), myIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        return PendingIntent.getBroadcast(context, id, myIntent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
     private PendingIntent getPendingIntent(int id) {
         return PendingIntent.getBroadcast(context, id, new Intent(context, AlarmAlertBroadcastReceiver.class), PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
-    private long getAlarmTime(Alarm alarm) {
-        return System.currentTimeMillis() + 1000*5;
+    private int getId(int alarmId) {
+        return getId(alarmId, null);
+    }
+
+    private int getId(int alarmId, DayOfWeek dayOfWeek) {
+        if (dayOfWeek == null) { //once - no repeat
+            return alarmId * 10;
+        } else {
+            return alarmId * 10 + dayOfWeek.getId();
+        }
     }
 
 }
