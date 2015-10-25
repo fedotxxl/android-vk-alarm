@@ -12,7 +12,7 @@ public class CalendarUtils {
     public static Calendar getCalendarForMoment(DayOfWeek dayOfWeek, int hours, int minutes) {
         Calendar date = Calendar.getInstance();
 
-        date.set(Calendar.HOUR, hours);
+        date.set(Calendar.HOUR_OF_DAY, hours);
         date.set(Calendar.MINUTE, minutes);
         date.set(Calendar.SECOND, 0);
 
@@ -29,7 +29,7 @@ public class CalendarUtils {
         //http://stackoverflow.com/questions/3463756/is-there-a-good-way-to-get-the-date-of-the-coming-wednesday
 
         int diff = dayOfWeek.getCalendarId() - date.get(Calendar.DAY_OF_WEEK);
-        if (!(diff > 0)) {
+        if (diff < 0) {
             diff += 7;
         }
         date.add(Calendar.DAY_OF_MONTH, diff);
@@ -39,7 +39,7 @@ public class CalendarUtils {
 
     public static Calendar addDaysIfPast(Calendar date, int daysToAdd) {
         while (date.before(Calendar.getInstance())) {
-            date.add(Calendar.HOUR, 24 * daysToAdd);
+            date.add(Calendar.DAY_OF_MONTH, daysToAdd);
         }
 
         return date;
