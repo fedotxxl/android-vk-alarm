@@ -1,5 +1,8 @@
 package io.belov.vk.alarm.alarm;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import io.belov.vk.alarm.DayOfWeek;
 import io.belov.vk.alarm.utils.StringUtils;
 
@@ -12,6 +15,7 @@ public class Alarm {
     private int repeat;
     private int snoozeInMinutes;
     private boolean isEnabled;
+    private long enabledAt;
     private boolean isVibrate;
     private String label;
 
@@ -30,6 +34,7 @@ public class Alarm {
         this.repeat = alarm.getRepeat();
         this.snoozeInMinutes = alarm.getSnoozeInMinutes();
         this.isEnabled = alarm.isEnabled();
+        this.enabledAt = alarm.getEnabledAt();
         this.isVibrate = alarm.isVibrate();
         this.label = alarm.getLabel();
         this.songId = alarm.getSongId();
@@ -56,39 +61,33 @@ public class Alarm {
 //}
 
     public void setIsEnabled(int isEnabled) {
-        this.isEnabled = (isEnabled != 0);
+        setIsEnabled(isEnabled != 0);
     }
 
     public void setIsVibrate(int isVibrate) {
         this.isVibrate = (isVibrate != 0);
     }
 
+    public void enable() {
+        this.isEnabled = true;
+        this.enabledAt = System.currentTimeMillis();
+    }
+
+    public void disable() {
+        this.isEnabled = false;
+        this.enabledAt = 0;
+    }
+
     public void toggleEnabled() {
-        this.isEnabled = !isEnabled;
+        if (isScheduled()) {
+            disable();
+        } else {
+            enable();
+        }
     }
 
     public boolean hasSong() {
         return songId != 0;
-    }
-
-    public void setPropertiesFrom(Alarm data) {
-        setPropertiesFrom(data.getId(), data);
-    }
-
-    public void setPropertiesFrom(int id, Alarm data) {
-        this.id = id;
-
-        whenHours = data.getWhenHours();
-        whenMinutes = data.getWhenMinutes();
-        label = data.getLabel();
-        disableComplexity = data.getDisableComplexity();
-        repeat = data.getRepeat();
-        snoozeInMinutes = data.getSnoozeInMinutes();
-        isEnabled = data.isEnabled();
-        isVibrate = data.isVibrate();
-        songId = data.getSongId();
-        songTitle = data.getSongTitle();
-        songBandName = data.getSongBandName();
     }
 
     public int getWhenInMinutes() {
@@ -136,8 +135,22 @@ public class Alarm {
         songBandName = null;
     }
 
+    public boolean isOnce() {
+        return !isRepeating();
+    }
+
     public boolean isRepeating() {
         return repeat > 0;
+    }
+
+    public boolean isScheduled() {
+        if (!isEnabled()) {
+            return false;
+        } else if (isRepeating()) {
+            return true;
+        } else {
+            return isEnabledLessThanDayAgo();
+        }
     }
 
     public enum DisableComplexity {
@@ -181,6 +194,20 @@ public class Alarm {
 
         public static Repeat getRepeatForDay(DayOfWeek dayOfWeek) {
             return valueOf(dayOfWeek.toString());
+        }
+    }
+
+    private boolean isEnabledLessThanDayAgo() {
+        if (enabledAt <= 0) {
+            return false;
+        } else {
+            Calendar enabledCal = new GregorianCalendar();
+            enabledCal.setTimeInMillis(enabledAt);
+
+            Calendar nowMinusDay = Calendar.getInstance();
+            nowMinusDay.add(Calendar.DAY_OF_MONTH, -1);
+
+            return enabledCal.after(nowMinusDay);
         }
     }
 
@@ -240,6 +267,14 @@ public class Alarm {
 
     public void setIsEnabled(boolean isEnabled) {
         this.isEnabled = isEnabled;
+    }
+
+    public long getEnabledAt() {
+        return enabledAt;
+    }
+
+    public void setEnabledAt(long enabledAt) {
+        this.enabledAt = enabledAt;
     }
 
     public boolean isVibrate() {

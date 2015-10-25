@@ -180,7 +180,7 @@ public class AlarmListActivity extends BaseAppCompatActivity {
     @Subscribe
     public void onAlarmCreateEvent(AlarmCreateEvent event) {
         Alarm alarm = new Alarm();
-        alarm.setIsEnabled(true);
+        alarm.enable();
         alarm.setIsVibrate(true);
         alarm.setDisableComplexity(Alarm.DisableComplexity.EASY.getId());
         alarm.setWhenHours(event.getHourOfDay());

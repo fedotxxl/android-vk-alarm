@@ -12,7 +12,7 @@ public class AlarmDatabase extends SQLiteOpenHelper {
     private static final String TAG = "AlarmDatabase";
 
     // If you change the database schema, you must increment the database version.
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 3;
     // DB Name, same is used to name the sqlite DB file
     private static final String DB_NAME = "vk_alarm_db";
 
@@ -24,6 +24,7 @@ public class AlarmDatabase extends SQLiteOpenHelper {
     public static final String COL_REPEAT = "repeat";
     public static final String COL_SNOOZE_IN_MINUTES = "snooze";
     public static final String COL_ENABLED = "enabled";
+    public static final String COL_ENABLED_AT = "enabled_at";
     public static final String COL_VIBRATE = "vibrate";
     public static final String COL_LABEL = "label";
     public static final String COL_SONG_ID = "song_id";
@@ -34,6 +35,7 @@ public class AlarmDatabase extends SQLiteOpenHelper {
     public static final String COL_USER_VK_ID = "vk_id";
     public static final String COL_USER_VK_SONGS_COUNT = "vk_songs_count";
 
+    private static final String DROP_TABLE_ALARMS = "DROP TABLE " + TABLE_ALARMS;
 
     private static final String CREATE_TABLE_ALARMS =
             "CREATE TABLE " + TABLE_ALARMS
@@ -44,6 +46,7 @@ public class AlarmDatabase extends SQLiteOpenHelper {
                     + COL_REPEAT + " INTEGER, "
                     + COL_SNOOZE_IN_MINUTES + " INTEGER, "
                     + COL_ENABLED + " INTEGER, "
+                    + COL_ENABLED_AT + " LONG, "
                     + COL_VIBRATE + " INTEGER, "
                     + COL_LABEL + " TEXT, "
                     + COL_SONG_ID + " INTEGER, "
@@ -62,6 +65,7 @@ public class AlarmDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        db.execSQL(DROP_TABLE_ALARMS);
+        db.execSQL(CREATE_TABLE_ALARMS);
     }
 }

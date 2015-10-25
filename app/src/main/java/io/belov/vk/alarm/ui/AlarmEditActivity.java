@@ -376,6 +376,7 @@ public class AlarmEditActivity extends BaseAppCompatActivity {
     }
 
     private void save() {
+        mAlarm.enable();
         alarmManager.update(mAlarm);
     }
 

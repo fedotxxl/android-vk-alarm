@@ -58,8 +58,8 @@ public class AlarmListAdapter extends ArrayAdapter<Alarm> implements ListAdapter
         });
 
         Alarm alarm = getItem(position);
-        boolean isEnabled = alarm.isEnabled();
-        int color = getColor((isEnabled) ? R.color.alarmItemEnabled : R.color.alarmItemDisabled);
+        boolean isScheduled = alarm.isScheduled();
+        int color = getColor((isScheduled) ? R.color.alarmItemEnabled : R.color.alarmItemDisabled);
 
         setupUiWhen(viewHolder, alarm, color);
         setupUiRepeat(viewHolder, alarm, color);
@@ -91,7 +91,7 @@ public class AlarmListAdapter extends ArrayAdapter<Alarm> implements ListAdapter
 
     private void setupButtonIsEnabled(ViewHolder viewHolder, Alarm alarm, final int position) {
         viewHolder.buttonIsEnabled.setTypeface(iconFont);
-        viewHolder.buttonIsEnabled.setSelected(alarm.isEnabled());
+        viewHolder.buttonIsEnabled.setSelected(alarm.isScheduled());
 
         viewHolder.buttonIsEnabled.setOnClickListener(new View.OnClickListener() {
             @Override

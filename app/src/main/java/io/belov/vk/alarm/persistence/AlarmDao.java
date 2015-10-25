@@ -88,6 +88,7 @@ public class AlarmDao implements AlarmDaoI {
         alarm.setRepeat(cursor.getInt(cursor.getColumnIndex(AlarmDatabase.COL_REPEAT)));
         alarm.setSnoozeInMinutes(cursor.getInt(cursor.getColumnIndex(AlarmDatabase.COL_SNOOZE_IN_MINUTES)));
         alarm.setIsEnabled(cursor.getInt(cursor.getColumnIndex(AlarmDatabase.COL_ENABLED)));
+        alarm.setEnabledAt(cursor.getLong(cursor.getColumnIndex(AlarmDatabase.COL_ENABLED_AT)));
         alarm.setIsVibrate(cursor.getInt(cursor.getColumnIndex(AlarmDatabase.COL_VIBRATE)));
         alarm.setLabel(cursor.getString(cursor.getColumnIndex(AlarmDatabase.COL_LABEL)));
         alarm.setSongId(cursor.getInt(cursor.getColumnIndex(AlarmDatabase.COL_SONG_ID)));
@@ -106,6 +107,7 @@ public class AlarmDao implements AlarmDaoI {
         values.put(AlarmDatabase.COL_REPEAT, alarm.getRepeat());
         values.put(AlarmDatabase.COL_SNOOZE_IN_MINUTES, alarm.getSnoozeInMinutes());
         values.put(AlarmDatabase.COL_ENABLED, alarm.isEnabled());
+        values.put(AlarmDatabase.COL_ENABLED_AT, alarm.getEnabledAt());
         values.put(AlarmDatabase.COL_VIBRATE, alarm.isVibrate());
         values.put(AlarmDatabase.COL_LABEL, alarm.getLabel());
         values.put(AlarmDatabase.COL_SONG_ID, alarm.getSongId());
