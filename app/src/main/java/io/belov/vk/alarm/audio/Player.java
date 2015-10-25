@@ -21,7 +21,8 @@ public class Player {
     public void play(final String url, final MediaPlayer.OnPreparedListener listener) {
         stop();
 
-        MediaPlayer mp = new MediaPlayer();
+        mp = new MediaPlayer();
+
         try {
             mp.setDataSource(url);
             mp.prepareAsync();
@@ -45,6 +46,7 @@ public class Player {
 
     public void stop() {
         if (mp != null) {
+            mp.stop();
             mp.release();
             mp = null;
         }

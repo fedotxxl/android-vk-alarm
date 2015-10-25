@@ -8,6 +8,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Date;
 
@@ -18,9 +19,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.belov.vk.alarm.R;
+import io.belov.vk.alarm.alarm.Alarm;
 import io.belov.vk.alarm.audio.Player;
 import io.belov.vk.alarm.ui.BaseActivity;
-import io.belov.vk.alarm.utils.RandomUtils;
 import io.belov.vk.alarm.utils.TimeUtils;
 import io.belov.vk.alarm.vk.VkSong;
 import io.belov.vk.alarm.vk.VkSongListener;
@@ -35,6 +36,8 @@ public class AlarmAlertActivity extends BaseActivity {
     private Player player;
     private boolean alarmActive;
     private int progressValue = 0;
+    private int progressValuePlus;
+    private int progressValueMinusTick;
 
     @Bind(R.id.alarm_alert_time)
     TextView timeTextView;
@@ -72,9 +75,50 @@ public class AlarmAlertActivity extends BaseActivity {
         alarmAlert = (AlarmAlert) bundle.getSerializable("alarmAlert");
         player = new Player();
 
-        setupTime();
+        Alarm.DisableComplexity disableComplexity = Alarm.DisableComplexity.myValueOf(alarmAlert.getDisableComplexity());
+
+        progressValuePlus = getProgressValuePlus(disableComplexity);
+        progressValueMinusTick = getProgressValueMinusTick(disableComplexity);
+
+        updateTime();
         setupProfile();
+        setupThread();
         startAlarm();
+    }
+
+    private void setupThread() {
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    int i = 1;
+
+                    while (!isInterrupted()) {
+                        final boolean shouldUpdateTime = (i % 10 == 0);
+
+                        Thread.sleep(200);
+
+                        if (shouldUpdateTime) {
+                            i = 1;
+                        }
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (shouldUpdateTime) updateTime();
+                                increaseProgressValue(progressValueMinusTick);
+                            }
+                        });
+
+                        i++;
+                    }
+                } catch (InterruptedException e) {
+                }
+            }
+        };
+
+        t.setDaemon(true);
+        t.start();
     }
 
     @Override
@@ -106,18 +150,29 @@ public class AlarmAlertActivity extends BaseActivity {
         layoutProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setProgressValue(RandomUtils.R.nextInt(360));
+                increaseProgressValue(progressValuePlus);
             }
         });
     }
 
-    private void setupTime() {
+    private void updateTime() {
         Date now = new Date();
         timeTextView.setText(TimeUtils.getWhenAsString(now.getHours(), now.getMinutes()));
     }
 
-    private void setProgressValue(int progressValue) {
-        circleProgressView.setValueAnimated(progressValue);
+    private synchronized void increaseProgressValue(int progressValueIncrement) {
+        int progressValueNew = Math.min(Math.max((progressValue + progressValueIncrement), 0), 360);
+        int progressValueChange = progressValueNew - progressValue;
+
+        progressValue = progressValueNew;
+
+        if (progressValueChange != 0) {
+            circleProgressView.setValueAnimated(progressValue, (progressValueChange > 0) ? Math.abs(progressValueChange) * 5 : 200);
+        }
+
+        if (progressValue >= 360) {
+            stopActivity();
+        }
     }
 
     private void startAlarm() {
@@ -127,9 +182,34 @@ public class AlarmAlertActivity extends BaseActivity {
                 public void on(VkSong song) {
                     songTitleTextView.setText(song.getTitle());
                     songTitleTextArtist.setText(song.getArtist());
-                    //player.play(song.getUrl());
+                    player.play(song.getUrl());
                 }
             });
+        }
+    }
+
+    private void stopActivity() {
+        player.stop();
+        finishAffinity();
+    }
+
+    private int getProgressValuePlus(Alarm.DisableComplexity disableComplexity) {
+        if (disableComplexity == Alarm.DisableComplexity.EASY) {
+            return 60;
+        } else if (disableComplexity == Alarm.DisableComplexity.MEDIUM) {
+            return 30;
+        } else {
+            return 15;
+        }
+    }
+
+    private int getProgressValueMinusTick(Alarm.DisableComplexity disableComplexity) {
+        if (disableComplexity == Alarm.DisableComplexity.EASY) {
+            return -5;
+        } else if (disableComplexity == Alarm.DisableComplexity.MEDIUM) {
+            return -10;
+        } else {
+            return -10;
         }
     }
 

@@ -25,9 +25,13 @@ android {
 
 repositories {
     maven {
+        url "https://mymavenrepo.com/repo/${myMavenRepoWriteToken}/"
+    }
+    maven {
         url 'http://oss.jfrog.org/artifactory/oss-snapshot-local'
     }
     maven { url "https://jitpack.io" }
+
 }
 
 dependencies {
@@ -40,6 +44,6 @@ dependencies {
     compile 'com.vk:androidsdk:1.6.1'
     compile 'com.code-troopers.betterpickers:library:2.1.0'
     compile 'de.hdodenhof:circleimageview:2.0.0'
-    compile 'com.github.jakob-grabner:Circle-Progress-View:v1.2.4'
+    compile 'com.github.jakob-grabner:CircleProgressView:v1.2.4-FIXED.1'
     apt 'com.google.dagger:dagger-compiler:2.0.1'
 }
