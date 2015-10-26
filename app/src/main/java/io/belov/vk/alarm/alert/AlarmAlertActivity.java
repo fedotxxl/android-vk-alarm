@@ -22,6 +22,7 @@ import io.belov.vk.alarm.R;
 import io.belov.vk.alarm.alarm.Alarm;
 import io.belov.vk.alarm.audio.Player;
 import io.belov.vk.alarm.ui.BaseActivity;
+import io.belov.vk.alarm.user.UserManager;
 import io.belov.vk.alarm.utils.TimeUtils;
 import io.belov.vk.alarm.vk.VkSong;
 import io.belov.vk.alarm.vk.VkSongListener;
@@ -56,6 +57,8 @@ public class AlarmAlertActivity extends BaseActivity {
 
     @Inject
     VkSongManager vkSongManager;
+    @Inject
+    UserManager userManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,7 +180,7 @@ public class AlarmAlertActivity extends BaseActivity {
 
     private void startAlarm() {
         if (alarmAlert.isRandom()) {
-            vkSongManager.getRandom(100, new VkSongListener() {
+            vkSongManager.getRandom(userManager.getCurrentUserSongsCount(), new VkSongListener() {
                 @Override
                 public void on(VkSong song) {
                     songTitleTextView.setText(song.getTitle());

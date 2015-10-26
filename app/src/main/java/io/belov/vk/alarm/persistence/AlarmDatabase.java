@@ -12,7 +12,7 @@ public class AlarmDatabase extends SQLiteOpenHelper {
     private static final String TAG = "AlarmDatabase";
 
     // If you change the database schema, you must increment the database version.
-    private static final int DB_VERSION = 3;
+    private static final int DB_VERSION = 4;
     // DB Name, same is used to name the sqlite DB file
     private static final String DB_NAME = "vk_alarm_db";
 
@@ -36,6 +36,13 @@ public class AlarmDatabase extends SQLiteOpenHelper {
     public static final String COL_USER_VK_SONGS_COUNT = "vk_songs_count";
 
     private static final String DROP_TABLE_ALARMS = "DROP TABLE " + TABLE_ALARMS;
+    private static final String DROP_TABLE_USER = "DROP TABLE " + TABLE_USER;
+
+    private static final String CREATE_TABLE_USER =
+            "CREATE TABLE " + TABLE_USER
+                    + " (" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + COL_USER_VK_ID + " INTEGER, "
+                    + COL_USER_VK_SONGS_COUNT + " INTEGER);";
 
     private static final String CREATE_TABLE_ALARMS =
             "CREATE TABLE " + TABLE_ALARMS
@@ -60,12 +67,15 @@ public class AlarmDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL(CREATE_TABLE_USER);
         db.execSQL(CREATE_TABLE_ALARMS);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL(DROP_TABLE_ALARMS);
+        db.execSQL(DROP_TABLE_USER);
+        db.execSQL(CREATE_TABLE_USER);
         db.execSQL(CREATE_TABLE_ALARMS);
     }
 }

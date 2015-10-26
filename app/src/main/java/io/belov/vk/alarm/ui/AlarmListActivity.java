@@ -16,7 +16,6 @@ import com.codetroopers.betterpickers.timepicker.TimePickerBuilder;
 import com.codetroopers.betterpickers.timepicker.TimePickerDialogFragment;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
-import com.vk.sdk.VKSdk;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +36,7 @@ import io.belov.vk.alarm.alarm.Alarm;
 import io.belov.vk.alarm.bus.AlarmUpdatedEvent;
 import io.belov.vk.alarm.utils.ActivityUtils;
 import io.belov.vk.alarm.utils.IntentUtils;
-import io.belov.vk.alarm.vk.VkManager;
+import io.belov.vk.alarm.user.UserManager;
 
 public class AlarmListActivity extends BaseAppCompatActivity {
 
@@ -51,7 +50,7 @@ public class AlarmListActivity extends BaseAppCompatActivity {
     @Inject
     Bus mBus;
     @Inject
-    VkManager vkManager;
+    UserManager userManager;
 
     @Bind(R.id.alarm_list_listview)
     ListView mListView;
@@ -69,6 +68,8 @@ public class AlarmListActivity extends BaseAppCompatActivity {
         mAdapter = new AlarmListAdapter(this, mList, mBus);
         mListView.setAdapter(mAdapter);
         mListView.setEmptyView(mEmptyTextView);
+
+        userManager.checkAndUpdateUserInfo();
     }
 
     @Override
@@ -176,7 +177,7 @@ public class AlarmListActivity extends BaseAppCompatActivity {
     }
 
     private void doLogout() {
-        if (vkManager.logout()) {
+        if (userManager.logout()) {
             ActivityUtils.openLoginActivity(this);
         }
     }

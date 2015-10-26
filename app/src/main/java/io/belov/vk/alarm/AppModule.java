@@ -11,6 +11,9 @@ import dagger.Provides;
 import io.belov.vk.alarm.alarm.AlarmManager;
 import io.belov.vk.alarm.alert.AlarmAlertScheduler;
 import io.belov.vk.alarm.persistence.AlarmDaoI;
+import io.belov.vk.alarm.user.UserDao;
+import io.belov.vk.alarm.user.UserDaoI;
+import io.belov.vk.alarm.user.UserManager;
 import io.belov.vk.alarm.vk.VkManager;
 import io.belov.vk.alarm.vk.VkSongManager;
 
@@ -44,7 +47,17 @@ public class AppModule {
     }
 
     @Provides @Singleton
-    public VkManager provideVkManager(Bus bus) {
-        return new VkManager(bus);
+    public VkManager provideVkManager() {
+        return new VkManager();
+    }
+
+    @Provides @Singleton
+    public UserDaoI provideUserDao(Context context) {
+        return new UserDao(context);
+    }
+
+    @Provides @Singleton
+    public UserManager provideUserManager(UserDaoI dao, VkManager vkManager, Bus bus) {
+        return new UserManager(dao, vkManager, bus);
     }
 }
