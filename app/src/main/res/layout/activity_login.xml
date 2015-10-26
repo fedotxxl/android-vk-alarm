@@ -6,21 +6,45 @@
     android:layout_height="match_parent">
 
 
-    <LinearLayout
+    <RelativeLayout
         style="@style/Container"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         tools:context=".LoginActivity">
 
+        <LinearLayout
+            android:id="@+id/login_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:paddingBottom="36dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="58dp"
+                android:src="@drawable/vk_logo"
+                />
+
+            <TextView
+                style="@style/login_h1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="alarm"/>
+        </LinearLayout>
+
         <Button
-            android:id="@+id/sign_in_button"
+            android:id="@+id/login_button"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:layout_marginTop="16dp"
             android:paddingLeft="32dp"
             android:paddingRight="32dp"
-            android:text="login"/>
-    </LinearLayout>
+            android:text="login"
+            android:layout_alignParentBottom="true" />
+
+
+    </RelativeLayout>
 
 </FrameLayout>

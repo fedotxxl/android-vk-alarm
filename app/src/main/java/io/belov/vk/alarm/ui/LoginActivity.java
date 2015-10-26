@@ -40,8 +40,17 @@ public class LoginActivity extends FragmentActivity {
         ButterKnife.bind(this);
     }
 
-    @OnClick(R.id.sign_in_button)
+    @OnClick(R.id.login_button)
     void onLoginClick() {
+        tryLogin();
+    }
+
+    @OnClick(R.id.login_logo)
+    void onLogoClick() {
+        tryLogin();
+    }
+
+    private void tryLogin() {
         VKSdk.login(this, sMyScope);
     }
 
