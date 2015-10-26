@@ -10,4 +10,5 @@ public interface AlarmDaoI {
     void insert(Alarm alarm);
     void update(Alarm alarm);
     void delete(int id);
+    boolean hasAlarms();
 }

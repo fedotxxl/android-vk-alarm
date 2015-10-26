@@ -43,6 +43,8 @@
     <string name="menu_cancel">Cancel</string>
 
     <string name="dialog_button_ok">OK</string>
+    <string name="dialog_button_yes">Yes</string>
+    <string name="dialog_button_no">No</string>
     <string name="dialog_button_cancel">Cancel</string>
 
     <string name="delete_dialog_title">Delete</string>
@@ -50,4 +52,6 @@
 
     <string name="songs_select_dialog_loading">Loading your songs...</string>
     <string name="songs_select_dialog_filter_hint">Filter songs...</string>
+
+    <string name="logout_dialog_message">All your alarms will be deleted. Are you sure you want to logout?</string>
 </resources>

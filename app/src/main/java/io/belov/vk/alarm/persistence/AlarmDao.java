@@ -78,6 +78,20 @@ public class AlarmDao implements AlarmDaoI {
         db.delete(AlarmDatabase.TABLE_ALARMS, whereClause, whereArgs);
     }
 
+    @Override
+    public boolean hasAlarms() {
+        boolean answer = false;
+
+        Cursor cursor = db.rawQuery("SELECT count(*) FROM alarms", null);
+        if (cursor != null && cursor.moveToFirst()) {
+            answer = cursor.getLong(0) > 0;
+
+            cursor.close();
+        }
+
+        return answer;
+    }
+
     private Alarm getAlarmFromCursor(Cursor cursor) {
         Alarm alarm = new Alarm();
 

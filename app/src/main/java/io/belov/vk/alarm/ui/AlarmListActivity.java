@@ -1,9 +1,11 @@
 package io.belov.vk.alarm.ui;
 
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
+import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,6 +37,7 @@ import io.belov.vk.alarm.alarm.Alarm;
 import io.belov.vk.alarm.bus.AlarmUpdatedEvent;
 import io.belov.vk.alarm.utils.ActivityUtils;
 import io.belov.vk.alarm.utils.IntentUtils;
+import io.belov.vk.alarm.vk.VkManager;
 
 public class AlarmListActivity extends BaseAppCompatActivity {
 
@@ -47,9 +50,13 @@ public class AlarmListActivity extends BaseAppCompatActivity {
     AlarmManager alarmManager;
     @Inject
     Bus mBus;
+    @Inject
+    VkManager vkManager;
 
-    @Bind(R.id.alarm_list_listview) ListView mListView;
-    @Bind(R.id.alarm_list_empty_view) TextView mEmptyTextView;
+    @Bind(R.id.alarm_list_listview)
+    ListView mListView;
+    @Bind(R.id.alarm_list_empty_view)
+    TextView mEmptyTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +108,7 @@ public class AlarmListActivity extends BaseAppCompatActivity {
                 IntentUtils.openUri(this, "https://github.com/rakuishi/Alarm-Android/issues");
                 break;
             case R.id.action_logout:
-                doLogout();
+                tryLogout();
                 break;
         }
 
@@ -140,9 +147,36 @@ public class AlarmListActivity extends BaseAppCompatActivity {
         dpb.show();
     }
 
+    private void tryLogout() {
+        if (alarmManager.hasAlarms()) {
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            doLogout();
+                            break;
+
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            dialog.dismiss();
+                            break;
+                    }
+                }
+            };
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder
+                    .setMessage(R.string.logout_dialog_message)
+                    .setPositiveButton(R.string.dialog_button_yes, dialogClickListener)
+                    .setNegativeButton(R.string.dialog_button_no, dialogClickListener)
+                    .show();
+        } else {
+            doLogout();
+        }
+    }
+
     private void doLogout() {
-        VKSdk.logout();
-        if (!VKSdk.isLoggedIn()) {
+        if (vkManager.logout()) {
             ActivityUtils.openLoginActivity(this);
         }
     }

@@ -1,6 +1,7 @@
 package io.belov.vk.alarm.alarm;
 
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,6 +11,7 @@ import io.belov.vk.alarm.alert.AlarmAlertScheduler;
 import io.belov.vk.alarm.bus.AlarmDeletedEvent;
 import io.belov.vk.alarm.bus.AlarmInsertedEvent;
 import io.belov.vk.alarm.bus.AlarmUpdatedEvent;
+import io.belov.vk.alarm.bus.VkLogoutEvent;
 import io.belov.vk.alarm.persistence.AlarmDaoI;
 
 /**
@@ -27,6 +29,8 @@ public class AlarmManager {
         this.bus = bus;
         this.dao = dao;
         this.alertScheduler = alertScheduler;
+
+        bus.register(this);
     }
 
     public Alarm find(int id) {
@@ -65,6 +69,23 @@ public class AlarmManager {
         for (Alarm alarm : alarms) {
             alertScheduler.schedule(alarm);
         }
+    }
+
+    private void removeAll() {
+        List<Alarm> alarms = findAll();
+
+        for (Alarm alarm : alarms) {
+            delete(alarm.getId());
+        }
+    }
+
+    @Subscribe
+    public void on(VkLogoutEvent e) {
+        removeAll();
+    }
+
+    public boolean hasAlarms() {
+        return dao.hasAlarms();
     }
 
     private static class AlarmListComparator implements Comparator<Alarm> {
