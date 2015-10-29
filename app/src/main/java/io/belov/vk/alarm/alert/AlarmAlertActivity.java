@@ -21,6 +21,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import io.belov.vk.alarm.R;
 import io.belov.vk.alarm.alarm.Alarm;
 import io.belov.vk.alarm.audio.Player;
+import io.belov.vk.alarm.preferences.PreferencesManager;
 import io.belov.vk.alarm.ui.BaseActivity;
 import io.belov.vk.alarm.user.UserManager;
 import io.belov.vk.alarm.utils.TimeUtils;
@@ -59,6 +60,8 @@ public class AlarmAlertActivity extends BaseActivity {
     VkSongManager vkSongManager;
     @Inject
     UserManager userManager;
+    @Inject
+    PreferencesManager preferencesManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +79,7 @@ public class AlarmAlertActivity extends BaseActivity {
 
         Bundle bundle = this.getIntent().getExtras();
         alarmAlert = (AlarmAlert) bundle.getSerializable("alarmAlert");
-        player = new Player();
+        player = new Player(this);
 
         Alarm.DisableComplexity disableComplexity = Alarm.DisableComplexity.myValueOf(alarmAlert.getDisableComplexity());
 
@@ -185,7 +188,7 @@ public class AlarmAlertActivity extends BaseActivity {
                 public void on(VkSong song) {
                     songTitleTextView.setText(song.getTitle());
                     songTitleTextArtist.setText(song.getArtist());
-                    player.play(song.getUrl());
+                    player.playWithBackup(song.getUrl(), preferencesManager.getPlayerPreferences());
                 }
             });
         }
