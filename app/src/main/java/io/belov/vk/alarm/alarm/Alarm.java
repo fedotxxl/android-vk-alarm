@@ -1,9 +1,9 @@
 package io.belov.vk.alarm.alarm;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 import io.belov.vk.alarm.DayOfWeek;
+import io.belov.vk.alarm.utils.CalendarUtils;
 import io.belov.vk.alarm.utils.StringUtils;
 
 public class Alarm {
@@ -201,13 +201,11 @@ public class Alarm {
         if (enabledAt <= 0) {
             return false;
         } else {
-            Calendar enabledCal = new GregorianCalendar();
-            enabledCal.setTimeInMillis(enabledAt);
+            Calendar now = Calendar.getInstance();
+            Calendar enabledDate = CalendarUtils.getCalendarForMoment(enabledAt);
+            Calendar nextPlayDate = CalendarUtils.getNextPlayDate(enabledDate, whenHours, whenMinutes);
 
-            Calendar nowMinusDay = Calendar.getInstance();
-            nowMinusDay.add(Calendar.DAY_OF_MONTH, -1);
-
-            return enabledCal.after(nowMinusDay);
+            return now.before(nextPlayDate);
         }
     }
 
