@@ -9,7 +9,7 @@ import android.net.Uri;
 public class PreferencesManager {
 
     public PlayerPreferences getPlayerPreferences() {
-        return new PlayerPreferences(true, getBackupSoundUri(), 500);
+        return new PlayerPreferences(true, getBackupSoundUri(), 3000);
     }
 
     private Uri getBackupSoundUri() {

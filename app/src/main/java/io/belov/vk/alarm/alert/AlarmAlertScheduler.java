@@ -81,6 +81,10 @@ public class AlarmAlertScheduler {
     }
 
     private long getAlarmTime(Alarm alarm, DayOfWeek dayOfWeek) {
+        if (dayOfWeek == null) {
+            return getFakeAlarmTime();
+        }
+
         return CalendarUtils.getCalendarForMoment(dayOfWeek, alarm.getWhenHours(), alarm.getWhenMinutes()).getTimeInMillis();
     }
 
@@ -111,4 +115,7 @@ public class AlarmAlertScheduler {
         }
     }
 
+    private long getFakeAlarmTime() {
+        return System.currentTimeMillis() + 5000;
+    }
 }
