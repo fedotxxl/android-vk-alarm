@@ -1,5 +1,7 @@
 package io.belov.vk.alarm.audio;
 
+import android.util.Log;
+
 import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -8,6 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import io.belov.vk.alarm.song.SongDownloadedListener;
 import io.belov.vk.alarm.song.SongDownloader;
 import io.belov.vk.alarm.song.SongStorage;
+import io.belov.vk.alarm.utils.FileDownloader;
 import io.belov.vk.alarm.utils.IoUtils;
 import io.belov.vk.alarm.vk.VkSong;
 import io.belov.vk.alarm.vk.VkSongWithFile;
@@ -17,55 +20,64 @@ import io.belov.vk.alarm.vk.VkSongWithFile;
  */
 public class PlayerQueue {
 
+    private String TAG = "PlayerQueue";
+
     private NextSongProvider nextSongProvider;
     private PlayerBackupProvider playerBackupProvider;
     private SongDownloader songDownloader;
     private SongStorage songStorage;
+    private FileDownloader fileDownloader;
     private volatile VkSongWithFile nextSongWithFile;
     private long maxDownloadDelayInMillis;
 
     public VkSongWithFile getNextSongOrBackup() {
-        VkSong nextSong = nextSongProvider.next();
+        VkSongWithFile answer = null;
 
-        if (nextSong != null) {
-            VkSongWithFile songWithFile = songStorage.get(nextSong);
+        if (isSongFileExists(nextSongWithFile)) {
+            answer = nextSongWithFile;
+            nextSongWithFile = null;
+        } else {
+            VkSongWithFile songWithFile = getNextSongWithFile();
 
-            if (songWithFile.isFileExists()) {
-                return songWithFile;
+            if (songWithFile != null) {
+                if (songWithFile.isFileExists()) {
+                    answer = songWithFile;
+                }
             }
         }
 
-        return playerBackupProvider.get();
+        if (answer == null) {
+            answer = playerBackupProvider.get();
+        }
+
+        return answer;
     }
 
     public void downloadNextSongOr(final SongDownloadedListener listener, final Runnable or) {
-        if (nextSongWithFile != null) {
+        if (isSongFileExists(nextSongWithFile)) {
             listener.on(nextSongWithFile);
             nextSongWithFile = null;
         } else {
             final PlayerQueue that = this;
-            final VkSong nextSong = nextSongProvider.next();
+            final VkSongWithFile songWithFile = getNextSongWithFile();
 
-            if (nextSong == null) {
+            if (songWithFile == null) {
                 or.run();
             } else {
-                final VkSongWithFile songWithFile = songStorage.get(nextSong);
-
                 if (songWithFile.isFileExists()) {
                     listener.on(songWithFile);
                 } else {
                     final AtomicBoolean sync = new AtomicBoolean(false);
 
-                    IoUtils.downloadAsync(songWithFile.getUrl(), songWithFile.getFile(), new IoUtils.FileDownloadedListener() {
+                    fileDownloader.downloadAsync(songWithFile.getUrl(), songWithFile.getFile(), new IoUtils.FileDownloadedListener() {
                         @Override
                         public void on(String url, File file) {
                             if (!sync.getAndSet(true)) {
                                 listener.on(songWithFile);
+                                scheduleNextSong();
                             } else {
                                 that.nextSongWithFile = songWithFile;
                             }
-
-                            scheduleNextSong();
                         }
                     });
 
@@ -83,7 +95,38 @@ public class PlayerQueue {
     }
 
     private void scheduleNextSong() {
-        //todo
+        if (nextSongWithFile != null) {
+            Log.e(TAG, "Next song is already scheduled");
+            return;
+        }
+
+        VkSong nextSong = nextSongProvider.next();
+
+        if (nextSong != null) {
+            VkSongWithFile songWithFile = songStorage.get(nextSong);
+
+            if (!songWithFile.isFileExists()) {
+                fileDownloader.downloadAsync(songWithFile.getUrl(), songWithFile.getFile());
+            }
+        }
+    }
+
+    private boolean isSongFileExists(VkSongWithFile vkSongWithFile) {
+        return vkSongWithFile != null && vkSongWithFile.isFileExists();
+    }
+
+    private VkSongWithFile getNextSongWithFile() {
+        if (nextSongWithFile != null) {
+            return nextSongWithFile;
+        } else {
+            VkSong nextSong =  nextSongProvider.next();
+
+            if (nextSong == null) {
+                return null;
+            } else {
+                return songStorage.get(nextSong);
+            }
+        }
     }
 
     interface NextSongProvider {
