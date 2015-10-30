@@ -2,8 +2,8 @@ package io.belov.vk.alarm.audio;
 
 import android.media.MediaPlayer;
 
-import io.belov.vk.alarm.song.Song;
 import io.belov.vk.alarm.song.SongDownloadedListener;
+import io.belov.vk.alarm.vk.VkSongWithFile;
 
 /**
  * Created by fbelov on 30.10.15.
@@ -22,13 +22,13 @@ public class PlayerFromQueue {
     public void play() {
         stop();
         mp = initMediaPlayer();
-        queue.getNextSongOr(getNextSongPlayAction(), getNextSongBackupAction());
+        queue.downloadNextSongOr(getNextSongPlayAction(), getNextSongBackupAction());
     }
 
     private SongDownloadedListener getNextSongPlayAction() {
         return new SongDownloadedListener() {
             @Override
-            public void on(Song song) {
+            public void on(VkSongWithFile song) {
                 play(song);
             }
         };
@@ -48,7 +48,7 @@ public class PlayerFromQueue {
         mp = null;
     }
 
-    private void play(Song song) {
+    private void play(VkSongWithFile song) {
         PlayerUtils.playSong(mp, song);
         if (songPlayedListener != null) songPlayedListener.on(song);
     }

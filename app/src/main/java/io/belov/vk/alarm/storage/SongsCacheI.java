@@ -8,16 +8,31 @@ import java.util.List;
  */
 public interface SongsCacheI {
 
-    void save(int id, File file);
-    File get(int id);
-    List<FileWithKey> getAll();
+    void save(int key, File file, Importance importance);
+    void touchAndSetImportance(int key, Importance importance);
+    FileWithData get(int key);
+    List<FileWithData> getAll();
     void clear();
 
-    class FileWithKey {
-
-        private int id;
+    class FileWithData {
+        private int key;
         private File file;
+        private Importance importance;
 
+        public int getKey() {
+            return key;
+        }
+
+        public File getFile() {
+            return file;
+        }
+
+        public Importance getImportance() {
+            return importance;
+        }
     }
 
+    enum Importance {
+        SMALL, LARGE
+    }
 }
