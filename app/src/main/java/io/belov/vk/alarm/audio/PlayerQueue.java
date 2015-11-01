@@ -1,17 +1,11 @@
 package io.belov.vk.alarm.audio;
 
-import android.util.Log;
-
-import java.io.File;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicBoolean;
-
+import io.belov.vk.alarm.preferences.PlayerPreferences;
 import io.belov.vk.alarm.song.SongDownloadedListener;
 import io.belov.vk.alarm.song.SongDownloader;
 import io.belov.vk.alarm.song.SongStorage;
-import io.belov.vk.alarm.utils.FileDownloader;
-import io.belov.vk.alarm.utils.IoUtils;
+import io.belov.vk.alarm.storage.SongsCacheI;
+import io.belov.vk.alarm.utils.FileDownloadPreferences;
 import io.belov.vk.alarm.vk.VkSong;
 import io.belov.vk.alarm.vk.VkSongWithFile;
 
@@ -26,27 +20,23 @@ public class PlayerQueue {
     private PlayerBackupProvider playerBackupProvider;
     private SongDownloader songDownloader;
     private SongStorage songStorage;
-    private FileDownloader fileDownloader;
-    private volatile VkSongWithFile nextSongWithFile;
+    private FileDownloadPreferences fileDownloadPreferences;
     private long maxDownloadDelayInMillis;
 
+    public PlayerQueue(PlayerPreferences playerPreferences, NextSongProvider nextSongProvider, PlayerBackupProvider playerBackupProvider, SongStorage songStorage, SongDownloader songDownloader) {
+        this.maxDownloadDelayInMillis = playerPreferences.getBackupDelayInMillis();
+        this.fileDownloadPreferences = playerPreferences.getFileDownloadPreferences();
+
+        this.nextSongProvider = nextSongProvider;
+        this.playerBackupProvider = playerBackupProvider;
+        this.songStorage = songStorage;
+        this.songDownloader = songDownloader;
+    }
+
     public VkSongWithFile getNextSongOrBackup() {
-        VkSongWithFile answer = null;
+        VkSongWithFile answer = getNextSongWithFile();
 
-        if (isSongFileExists(nextSongWithFile)) {
-            answer = nextSongWithFile;
-            nextSongWithFile = null;
-        } else {
-            VkSongWithFile songWithFile = getNextSongWithFile();
-
-            if (songWithFile != null) {
-                if (songWithFile.isFileExists()) {
-                    answer = songWithFile;
-                }
-            }
-        }
-
-        if (answer == null) {
+        if (!isSongFileExists(answer)) {
             answer = playerBackupProvider.get();
         }
 
@@ -54,60 +44,29 @@ public class PlayerQueue {
     }
 
     public void downloadNextSongOr(final SongDownloadedListener listener, final Runnable or) {
-        if (isSongFileExists(nextSongWithFile)) {
-            listener.on(nextSongWithFile);
-            nextSongWithFile = null;
-        } else {
-            final PlayerQueue that = this;
-            final VkSongWithFile songWithFile = getNextSongWithFile();
+            final VkSong song = nextSongProvider.next();
 
-            if (songWithFile == null) {
+            if (song == null) {
                 or.run();
             } else {
-                if (songWithFile.isFileExists()) {
-                    listener.on(songWithFile);
-                } else {
-                    final AtomicBoolean sync = new AtomicBoolean(false);
+                SongDownloadedListener onDownloaded = new SongDownloadedListener() {
+                    @Override
+                    public void on(VkSongWithFile songWithFile) {
+                        listener.on(songWithFile);
 
-                    fileDownloader.downloadAsync(songWithFile.getUrl(), songWithFile.getFile(), new IoUtils.FileDownloadedListener() {
-                        @Override
-                        public void on(String url, File file) {
-                            if (!sync.getAndSet(true)) {
-                                listener.on(songWithFile);
-                                scheduleNextSong();
-                            } else {
-                                that.nextSongWithFile = songWithFile;
-                            }
-                        }
-                    });
+                        scheduleNextSong();
+                    }
+                };
 
-                    new Timer().schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            if (!sync.getAndSet(true)) {
-                                or.run();
-                            }
-                        }
-                    }, maxDownloadDelayInMillis);
-                }
+                songDownloader.downloadAndCache(song, SongsCacheI.Importance.SMALL, onDownloaded, or, fileDownloadPreferences, maxDownloadDelayInMillis);
             }
-        }
     }
 
     private void scheduleNextSong() {
-        if (nextSongWithFile != null) {
-            Log.e(TAG, "Next song is already scheduled");
-            return;
-        }
-
         VkSong nextSong = nextSongProvider.next();
 
         if (nextSong != null) {
-            VkSongWithFile songWithFile = songStorage.get(nextSong);
-
-            if (!songWithFile.isFileExists()) {
-                fileDownloader.downloadAsync(songWithFile.getUrl(), songWithFile.getFile());
-            }
+            songDownloader.downloadAndCache(nextSong, SongsCacheI.Importance.SMALL, fileDownloadPreferences);
         }
     }
 
@@ -116,16 +75,12 @@ public class PlayerQueue {
     }
 
     private VkSongWithFile getNextSongWithFile() {
-        if (nextSongWithFile != null) {
-            return nextSongWithFile;
-        } else {
-            VkSong nextSong =  nextSongProvider.next();
+        VkSong nextSong = nextSongProvider.next();
 
-            if (nextSong == null) {
-                return null;
-            } else {
-                return songStorage.get(nextSong);
-            }
+        if (nextSong == null) {
+            return null;
+        } else {
+            return songStorage.get(nextSong);
         }
     }
 
