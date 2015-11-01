@@ -33,37 +33,34 @@ public class PlayerQueue {
         this.songDownloader = songDownloader;
     }
 
-    public VkSongWithFile getNextSongOrBackup() {
-        VkSongWithFile answer = getNextSongWithFile();
-
-        if (!isSongFileExists(answer)) {
-            answer = playerBackupProvider.get();
-        }
-
-        return answer;
+    public void moveToNextSong() {
+        nextSongProvider.moveNext();
     }
 
-    public void downloadNextSongOr(final SongDownloadedListener listener, final Runnable or) {
-            final VkSong song = nextSongProvider.next();
+    public SongWithInfo getCurrentSongOrBackup() {
+        boolean isBackup = false;
+        VkSongWithFile songWithFile = getCurrentSongWithFile();
+
+        if (!isSongFileExists(songWithFile)) {
+            isBackup = true;
+            songWithFile = playerBackupProvider.get();
+        }
+
+        return new SongWithInfo(songWithFile, isBackup);
+    }
+
+    public void downloadCurrentSongOr(final SongDownloadedListener listener, final Runnable or) {
+            final VkSong song = nextSongProvider.getCurrent();
 
             if (song == null) {
                 or.run();
             } else {
-                SongDownloadedListener onDownloaded = new SongDownloadedListener() {
-                    @Override
-                    public void on(VkSongWithFile songWithFile) {
-                        listener.on(songWithFile);
-
-                        scheduleNextSong();
-                    }
-                };
-
-                songDownloader.downloadAndCache(song, SongsCacheI.Importance.SMALL, onDownloaded, or, fileDownloadPreferences, maxDownloadDelayInMillis);
+                songDownloader.downloadAndCache(song, SongsCacheI.Importance.SMALL, listener, or, fileDownloadPreferences, maxDownloadDelayInMillis);
             }
     }
 
-    private void scheduleNextSong() {
-        VkSong nextSong = nextSongProvider.next();
+    public void scheduleToDownloadNextSongOrSkip() {
+        VkSong nextSong = nextSongProvider.getNext();
 
         if (nextSong != null) {
             songDownloader.downloadAndCache(nextSong, SongsCacheI.Importance.SMALL, fileDownloadPreferences);
@@ -74,19 +71,45 @@ public class PlayerQueue {
         return vkSongWithFile != null && vkSongWithFile.isFileExists();
     }
 
-    private VkSongWithFile getNextSongWithFile() {
-        VkSong nextSong = nextSongProvider.next();
+    private VkSongWithFile getCurrentSongWithFile() {
+        VkSong song = nextSongProvider.getCurrent();
 
-        if (nextSong == null) {
+        if (song == null) {
             return null;
         } else {
-            return songStorage.get(nextSong);
+            return songStorage.get(song);
         }
     }
 
     interface NextSongProvider {
 
-        VkSong next();
+        VkSong getCurrent();
+        VkSong getNext();
+        void moveNext();
+        void onSongChange(SongChangeListener listener);
 
+        interface SongChangeListener {
+
+            void on(VkSong song);
+
+        }
+    }
+
+    public static class SongWithInfo {
+        private VkSongWithFile songWithFile;
+        private boolean isBackup;
+
+        public SongWithInfo(VkSongWithFile songWithFile, boolean isBackup) {
+            this.songWithFile = songWithFile;
+            this.isBackup = isBackup;
+        }
+
+        public VkSongWithFile getSongWithFile() {
+            return songWithFile;
+        }
+
+        public boolean isBackup() {
+            return isBackup;
+        }
     }
 }

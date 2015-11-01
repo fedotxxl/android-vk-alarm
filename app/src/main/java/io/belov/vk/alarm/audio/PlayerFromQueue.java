@@ -11,6 +11,8 @@ import io.belov.vk.alarm.vk.VkSongWithFile;
 public class PlayerFromQueue {
 
     private volatile MediaPlayer mp = null;
+    private volatile boolean isBackupPlaying = false;
+
     private final PlayerQueue queue;
     private final SongStartPlayingListener songStartPlayingListener;
 
@@ -22,23 +24,24 @@ public class PlayerFromQueue {
     public void play() {
         stop();
         mp = initMediaPlayer();
-        queue.downloadNextSongOr(getNextSongPlayAction(), getNextSongBackupAction());
+        queue.downloadCurrentSongOr(getCurrentSongPlayAction(), getCurrentSongBackupAction());
     }
 
-    private SongDownloadedListener getNextSongPlayAction() {
+    private SongDownloadedListener getCurrentSongPlayAction() {
         return new SongDownloadedListener() {
             @Override
             public void on(VkSongWithFile song) {
-                play(song);
+                queue.scheduleToDownloadNextSongOrSkip();
+                play(song, false);
             }
         };
     }
 
-    private Runnable getNextSongBackupAction() {
+    private Runnable getCurrentSongBackupAction() {
         return new Runnable() {
             @Override
             public void run() {
-                playNextSongOrBackup();
+                playCurrentSongOrBackup();
             }
         };
     }
@@ -48,13 +51,25 @@ public class PlayerFromQueue {
         mp = null;
     }
 
-    private void play(VkSongWithFile song) {
+    private void play(VkSongWithFile song, boolean isBackup) {
+        this.isBackupPlaying = isBackup;
         PlayerUtils.playSong(mp, song);
         if (songStartPlayingListener != null) songStartPlayingListener.on(song);
     }
 
-    private void playNextSongOrBackup() {
-        play(queue.getNextSongOrBackup());
+    private void playCurrentSongOrBackup() {
+        PlayerQueue.SongWithInfo songWithInfo = queue.getCurrentSongOrBackup();
+
+        play(songWithInfo.getSongWithFile(), songWithInfo.isBackup());
+    }
+
+    private void moveToNextSong() {
+        if (isBackupPlaying) {
+            isBackupPlaying = false;
+        } else {
+            queue.moveToNextSong();
+            queue.scheduleToDownloadNextSongOrSkip();
+        }
     }
 
     private MediaPlayer initMediaPlayer() {
@@ -63,7 +78,8 @@ public class PlayerFromQueue {
         answer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                playNextSongOrBackup();
+                moveToNextSong();
+                playCurrentSongOrBackup();
             }
         });
 
