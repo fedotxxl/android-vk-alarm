@@ -12,11 +12,11 @@ public class PlayerFromQueue {
 
     private volatile MediaPlayer mp = null;
     private final PlayerQueue queue;
-    private final SongPlayedListener songPlayedListener;
+    private final SongStartPlayingListener songStartPlayingListener;
 
-    public PlayerFromQueue(PlayerQueue queue, SongPlayedListener songPlayedListener) {
+    public PlayerFromQueue(PlayerQueue queue, SongStartPlayingListener songStartPlayingListener) {
         this.queue = queue;
-        this.songPlayedListener = songPlayedListener;
+        this.songStartPlayingListener = songStartPlayingListener;
     }
 
     public void play() {
@@ -50,7 +50,7 @@ public class PlayerFromQueue {
 
     private void play(VkSongWithFile song) {
         PlayerUtils.playSong(mp, song);
-        if (songPlayedListener != null) songPlayedListener.on(song);
+        if (songStartPlayingListener != null) songStartPlayingListener.on(song);
     }
 
     private void playNextSongOrBackup() {
