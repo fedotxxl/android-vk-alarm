@@ -81,7 +81,7 @@ public class PlayerQueue {
         }
     }
 
-    interface NextSongProvider {
+    public interface NextSongProvider {
 
         VkSong getCurrent();
         VkSong getNext();
@@ -90,7 +90,7 @@ public class PlayerQueue {
 
         interface SongChangeListener {
 
-            void on(VkSong song);
+            void on(VkSong current, VkSong next);
 
         }
     }
