@@ -5,6 +5,7 @@ import android.util.Log;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.belov.vk.alarm.vk.VkErrorListener;
 import io.belov.vk.alarm.vk.VkSong;
 import io.belov.vk.alarm.vk.VkSongListener;
 import io.belov.vk.alarm.vk.VkSongManager;
@@ -30,6 +31,7 @@ public class SingleSongProvider implements PlayerQueue.NextSongProvider {
         this.vkSongManager = vkSongManager;
         this.ownerId = ownerId;
         this.songId = songId;
+        moveNext();
     }
 
     @Override
@@ -60,13 +62,19 @@ public class SingleSongProvider implements PlayerQueue.NextSongProvider {
         try {
             final CountDownLatch latch = new CountDownLatch(1);
 
-            vkSongManager.getById(ownerId, songId, new VkSongListener() {
-                @Override
-                public void on(VkSong song) {
-                    answer.set(song);
-                    latch.countDown();
-                }
-            });
+            vkSongManager.getById(ownerId, songId,
+                    new VkSongListener() {
+                        @Override
+                        public void on(VkSong song) {
+                            answer.set(song);
+                            latch.countDown();
+                        }
+                    }, new VkErrorListener() {
+                        @Override
+                        public void on() {
+                            latch.countDown();
+                        }
+                    });
 
             latch.await();
         } catch (InterruptedException e) {

@@ -53,26 +53,35 @@ public class VkSongManager {
         return request;
     }
 
-    public VKRequest getById(int ownerId, int songId, final VkSongListener listener) {
+    public VKRequest getById(int ownerId, int songId, final VkSongListener listener, final VkErrorListener errorListener) {
         VKRequest request = VKApi.audio().getById(VKParameters.from("audios", ownerId + "_" + songId));
 
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
+                VkSong song = null;
+
                 try {
                     JSONObject jsonSong = response.json.getJSONArray("response").getJSONObject(0);
 
                     if (jsonSong != null) {
-                        listener.on(new VkSong(jsonSong));
+                        song = new VkSong(jsonSong);
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "getById", e);
+                }
+
+                if (song != null) {
+                    listener.on(song);
+                } else {
+                    if (errorListener != null) errorListener.on();
                 }
             }
 
             @Override
             public void onError(VKError error) {
                 Log.e(TAG, error.toString());
+                if (errorListener != null)  errorListener.on();
             }
         });
 
@@ -80,11 +89,17 @@ public class VkSongManager {
     }
 
     public VKRequest getAllSongs(final VkSongsListeners listener) {
+        return getAllSongs(listener, null);
+    }
+
+    public VKRequest getAllSongs(final VkSongsListeners listener, final VkErrorListener errorListener) {
         VKRequest request = VKApi.audio().get();
 
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
+                boolean isSuccess = false;
+
                 try {
                     JSONObject jsonResponse = response.json.getJSONObject("response");
 
@@ -93,15 +108,19 @@ public class VkSongManager {
                         songsCount = jsonResponse.getInt("count");
 
                         listener.on(songsCount, songsAllCache);
+                        isSuccess = true;
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "getAllSongs", e);
                 }
+
+                if (!isSuccess && errorListener != null) errorListener.on();
             }
 
             @Override
             public void onError(VKError error) {
                 Log.e(TAG, error.toString());
+                if (errorListener != null) errorListener.on();
             }
         });
 

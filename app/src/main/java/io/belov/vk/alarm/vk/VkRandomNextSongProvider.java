@@ -25,6 +25,7 @@ public class VkRandomNextSongProvider implements PlayerQueue.NextSongProvider {
 
     public VkRandomNextSongProvider(VkSongManager vkSongManager) {
         this.vkSongManager = vkSongManager;
+        moveNext();
     }
 
     @Override
@@ -61,13 +62,19 @@ public class VkRandomNextSongProvider implements PlayerQueue.NextSongProvider {
         try {
             final CountDownLatch latch = new CountDownLatch(1);
 
-            vkSongManager.getAllSongs(new VkSongsListeners() {
-                @Override
-                public void on(int count, List<VkSong> songs) {
-                    allSongs = songs;
-                    latch.countDown();
-                }
-            });
+            vkSongManager.getAllSongs(
+                    new VkSongsListeners() {
+                        @Override
+                        public void on(int count, List<VkSong> songs) {
+                            allSongs = songs;
+                            latch.countDown();
+                        }
+                    }, new VkErrorListener() {
+                        @Override
+                        public void on() {
+                            latch.countDown();
+                        }
+                    });
 
             latch.await();
         } catch (InterruptedException e) {
