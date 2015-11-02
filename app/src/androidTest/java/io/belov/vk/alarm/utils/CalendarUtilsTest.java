@@ -20,14 +20,14 @@ public class CalendarUtilsTest extends TestCase {
         int nowDayOfYear = now.get(Calendar.DAY_OF_YEAR);
 
         //then:
-        c = CalendarUtils.getCalendarForMoment(null, nowHours, nowMinutes - 1);
+        c = CalendarUtils.getCalendarForMoment((DayOfWeek) null, nowHours, nowMinutes - 1);
 
         assertEquals(c.get(Calendar.DAY_OF_YEAR), nowDayOfYear + 1);
         assertEquals(c.get(Calendar.HOUR_OF_DAY), nowHours);
         assertEquals(c.get(Calendar.MINUTE), nowMinutes - 1);
 
         //then:
-        c = CalendarUtils.getCalendarForMoment(null, nowHours, nowMinutes + 1);
+        c = CalendarUtils.getCalendarForMoment((DayOfWeek) null, nowHours, nowMinutes + 1);
 
         assertEquals(c.get(Calendar.DAY_OF_YEAR), nowDayOfYear);
         assertEquals(c.get(Calendar.HOUR_OF_DAY), nowHours);

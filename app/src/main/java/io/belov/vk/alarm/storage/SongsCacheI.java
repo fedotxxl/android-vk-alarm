@@ -19,6 +19,12 @@ public interface SongsCacheI {
         private File file;
         private Importance importance;
 
+        public FileWithData(int key, File file, Importance importance) {
+            this.key = key;
+            this.file = file;
+            this.importance = importance;
+        }
+
         public int getKey() {
             return key;
         }
