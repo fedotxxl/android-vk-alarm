@@ -44,6 +44,16 @@ public class UserManager {
         });
     }
 
+    public int getCurrentUserId() {
+        User user = dao.get();
+
+        if (user == null) {
+            return -1;
+        } else {
+            return user.getId();
+        }
+    }
+
     public int getCurrentUserSongsCount() {
         User user = dao.get();
 

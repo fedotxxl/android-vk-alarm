@@ -1,6 +1,7 @@
 package io.belov.vk.alarm.audio;
 
 import io.belov.vk.alarm.preferences.PlayerPreferences;
+import io.belov.vk.alarm.preferences.PreferencesManager;
 import io.belov.vk.alarm.song.SongDownloadedListener;
 import io.belov.vk.alarm.song.SongDownloader;
 import io.belov.vk.alarm.song.SongStorage;
@@ -22,6 +23,10 @@ public class PlayerQueue {
     private SongStorage songStorage;
     private FileDownloadPreferences fileDownloadPreferences;
     private long maxDownloadDelayInMillis;
+
+    public PlayerQueue(Dependencies dependencies, NextSongProvider nextSongProvider) {
+        this(dependencies.getPreferencesManager().getPlayerPreferences(), nextSongProvider, dependencies.playerBackupProvider, dependencies.songStorage, dependencies.songDownloader);
+    }
 
     public PlayerQueue(PlayerPreferences playerPreferences, NextSongProvider nextSongProvider, PlayerBackupProvider playerBackupProvider, SongStorage songStorage, SongDownloader songDownloader) {
         this.maxDownloadDelayInMillis = playerPreferences.getBackupDelayInMillis();
@@ -110,6 +115,36 @@ public class PlayerQueue {
 
         public boolean isBackup() {
             return isBackup;
+        }
+    }
+
+    public static class Dependencies {
+        private PreferencesManager preferencesManager;
+        private PlayerBackupProvider playerBackupProvider;
+        private SongDownloader songDownloader;
+        private SongStorage songStorage;
+
+        public Dependencies(PreferencesManager preferencesManager, PlayerBackupProvider playerBackupProvider, SongDownloader songDownloader, SongStorage songStorage) {
+            this.preferencesManager = preferencesManager;
+            this.playerBackupProvider = playerBackupProvider;
+            this.songDownloader = songDownloader;
+            this.songStorage = songStorage;
+        }
+
+        public PreferencesManager getPreferencesManager() {
+            return preferencesManager;
+        }
+
+        public PlayerBackupProvider getPlayerBackupProvider() {
+            return playerBackupProvider;
+        }
+
+        public SongDownloader getSongDownloader() {
+            return songDownloader;
+        }
+
+        public SongStorage getSongStorage() {
+            return songStorage;
         }
     }
 }

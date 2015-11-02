@@ -12,7 +12,7 @@ import io.belov.vk.alarm.utils.RandomUtils;
 /**
  * Created by fbelov on 02.11.15.
  */
-public class VkNextSongProvider implements PlayerQueue.NextSongProvider {
+public class VkRandomNextSongProvider implements PlayerQueue.NextSongProvider {
 
     private static final String TAG = "VkNextSongProvider";
 
@@ -23,7 +23,7 @@ public class VkNextSongProvider implements PlayerQueue.NextSongProvider {
     private VkSong currentSong = null;
     private VkSong nextSong = null;
 
-    public VkNextSongProvider(VkSongManager vkSongManager) {
+    public VkRandomNextSongProvider(VkSongManager vkSongManager) {
         this.vkSongManager = vkSongManager;
     }
 

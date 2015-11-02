@@ -10,11 +10,18 @@ import dagger.Module;
 import dagger.Provides;
 import io.belov.vk.alarm.alarm.AlarmManager;
 import io.belov.vk.alarm.alert.AlarmAlertScheduler;
+import io.belov.vk.alarm.audio.PlayerBackupProvider;
+import io.belov.vk.alarm.audio.PlayerQueue;
 import io.belov.vk.alarm.persistence.AlarmDaoI;
 import io.belov.vk.alarm.preferences.PreferencesManager;
+import io.belov.vk.alarm.song.SongDownloader;
+import io.belov.vk.alarm.song.SongStorage;
+import io.belov.vk.alarm.storage.SongsCache;
+import io.belov.vk.alarm.storage.SongsCacheI;
 import io.belov.vk.alarm.user.UserDao;
 import io.belov.vk.alarm.user.UserDaoI;
 import io.belov.vk.alarm.user.UserManager;
+import io.belov.vk.alarm.utils.FileDownloader;
 import io.belov.vk.alarm.vk.VkManager;
 import io.belov.vk.alarm.vk.VkSongManager;
 
@@ -65,5 +72,35 @@ public class AppModule {
     @Provides @Singleton
     public PreferencesManager providePreferencesManager() {
         return new PreferencesManager();
+    }
+
+    @Provides @Singleton
+    public PlayerBackupProvider providePlayerBackupProvider() {
+        return new PlayerBackupProvider();
+    }
+
+    @Provides @Singleton
+    public SongsCacheI provideSongsCache(Context context) {
+        return new SongsCache(context);
+    }
+
+    @Provides @Singleton
+    public FileDownloader provideFileDownloader() {
+        return new FileDownloader();
+    }
+
+    @Provides @Singleton
+    public SongDownloader provideSongDownloader(Context context, SongsCacheI songsCache, FileDownloader fileDownloader) {
+        return new SongDownloader(context, songsCache, fileDownloader);
+    }
+
+    @Provides @Singleton
+    public SongStorage provideSongStorage(SongsCacheI songsCache) {
+        return new SongStorage(songsCache);
+    }
+    
+    @Provides @Singleton
+    public PlayerQueue.Dependencies providePlayerQueueDependencies(PreferencesManager preferencesManager, PlayerBackupProvider playerBackupProvider, SongDownloader songDownloader, SongStorage songStorage) {
+        return new PlayerQueue.Dependencies(preferencesManager, playerBackupProvider, songDownloader, songStorage);
     }
 }

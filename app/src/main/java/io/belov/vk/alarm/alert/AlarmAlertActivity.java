@@ -1,5 +1,6 @@
 package io.belov.vk.alarm.alert;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
@@ -8,9 +9,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Date;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.inject.Inject;
 
@@ -20,14 +22,19 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.belov.vk.alarm.R;
 import io.belov.vk.alarm.alarm.Alarm;
-import io.belov.vk.alarm.audio.Player;
+import io.belov.vk.alarm.audio.PlayerFromQueue;
+import io.belov.vk.alarm.audio.PlayerQueue;
+import io.belov.vk.alarm.audio.SingleSongProvider;
+import io.belov.vk.alarm.audio.SongStartPlayingListener;
 import io.belov.vk.alarm.preferences.PreferencesManager;
 import io.belov.vk.alarm.ui.BaseActivity;
 import io.belov.vk.alarm.user.UserManager;
 import io.belov.vk.alarm.utils.TimeUtils;
+import io.belov.vk.alarm.vk.VkRandomNextSongProvider;
 import io.belov.vk.alarm.vk.VkSong;
 import io.belov.vk.alarm.vk.VkSongListener;
 import io.belov.vk.alarm.vk.VkSongManager;
+import io.belov.vk.alarm.vk.VkSongWithFile;
 
 /**
  * Created by fbelov on 19.10.15.
@@ -35,7 +42,7 @@ import io.belov.vk.alarm.vk.VkSongManager;
 public class AlarmAlertActivity extends BaseActivity {
 
     private AlarmAlert alarmAlert;
-    private Player player;
+    private PlayerFromQueue player;
     private boolean alarmActive;
     private int progressValue = 0;
     private int progressValuePlus;
@@ -62,6 +69,8 @@ public class AlarmAlertActivity extends BaseActivity {
     UserManager userManager;
     @Inject
     PreferencesManager preferencesManager;
+    @Inject
+    PlayerQueue.Dependencies playerQueueDependencies;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +88,7 @@ public class AlarmAlertActivity extends BaseActivity {
 
         Bundle bundle = this.getIntent().getExtras();
         alarmAlert = (AlarmAlert) bundle.getSerializable("alarmAlert");
-        player = new Player(this);
+        player = initPlayer();
 
         Alarm.DisableComplexity disableComplexity = Alarm.DisableComplexity.myValueOf(alarmAlert.getDisableComplexity());
 
@@ -90,6 +99,38 @@ public class AlarmAlertActivity extends BaseActivity {
         setupProfile();
         setupThread();
         startAlarm();
+    }
+
+    private PlayerFromQueue initPlayer() {
+        PlayerQueue.NextSongProvider nextSongProvider = getNextSongProvider();
+        PlayerQueue queue = new PlayerQueue(playerQueueDependencies, nextSongProvider);
+
+        return new PlayerFromQueue(queue, getSongStartPlayingListener());
+    }
+
+    private PlayerQueue.NextSongProvider getNextSongProvider() {
+        if (alarmAlert.hasSong()) {
+            return new SingleSongProvider(vkSongManager, userManager.getCurrentUserId(), alarmAlert.getSongId());
+        } else {
+            return new VkRandomNextSongProvider(vkSongManager);
+        }
+    }
+
+    private SongStartPlayingListener getSongStartPlayingListener() {
+        final Activity activity = this;
+
+        return new SongStartPlayingListener() {
+            @Override
+            public void on(final VkSongWithFile song) {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        songTitleTextView.setText(song.getTitle());
+                        songTitleTextArtist.setText(song.getArtist());
+                    }
+                });
+            }
+        };
     }
 
     private void setupThread() {
@@ -182,16 +223,7 @@ public class AlarmAlertActivity extends BaseActivity {
     }
 
     private void startAlarm() {
-        if (alarmAlert.isRandom()) {
-            vkSongManager.getRandom(userManager.getCurrentUserSongsCount(), new VkSongListener() {
-                @Override
-                public void on(VkSong song) {
-                    songTitleTextView.setText(song.getTitle());
-                    songTitleTextArtist.setText(song.getArtist());
-                    player.playWithBackup(song.getUrl(), preferencesManager.getPlayerPreferences());
-                }
-            });
-        }
+        player.play();
     }
 
     private void stopActivity() {
