@@ -22,8 +22,10 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.belov.vk.alarm.R;
 import io.belov.vk.alarm.alarm.Alarm;
+import io.belov.vk.alarm.audio.PlayableSong;
 import io.belov.vk.alarm.audio.PlayerFromQueue;
 import io.belov.vk.alarm.audio.PlayerQueue;
+import io.belov.vk.alarm.audio.PlayerUtils;
 import io.belov.vk.alarm.audio.SingleSongProvider;
 import io.belov.vk.alarm.audio.SongStartPlayingListener;
 import io.belov.vk.alarm.preferences.PreferencesManager;
@@ -71,6 +73,8 @@ public class AlarmAlertActivity extends BaseActivity {
     PreferencesManager preferencesManager;
     @Inject
     PlayerQueue.Dependencies playerQueueDependencies;
+    @Inject
+    PlayerUtils playerUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +109,7 @@ public class AlarmAlertActivity extends BaseActivity {
         PlayerQueue.NextSongProvider nextSongProvider = getNextSongProvider();
         PlayerQueue queue = new PlayerQueue(playerQueueDependencies, nextSongProvider);
 
-        return new PlayerFromQueue(queue, getSongStartPlayingListener());
+        return new PlayerFromQueue(playerUtils, queue, getSongStartPlayingListener());
     }
 
     private PlayerQueue.NextSongProvider getNextSongProvider() {
@@ -121,7 +125,7 @@ public class AlarmAlertActivity extends BaseActivity {
 
         return new SongStartPlayingListener() {
             @Override
-            public void on(final VkSongWithFile song) {
+            public void on(final PlayableSong song) {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

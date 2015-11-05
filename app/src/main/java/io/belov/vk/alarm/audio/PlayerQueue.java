@@ -43,15 +43,20 @@ public class PlayerQueue {
     }
 
     public SongWithInfo getCurrentSongOrBackup() {
-        boolean isBackup = false;
+        PlayableSong song;
+        boolean isBackup;
+
         VkSongWithFile songWithFile = getCurrentSongWithFile();
 
-        if (!isSongFileExists(songWithFile)) {
+        if (isSongFileExists(songWithFile)) {
+            song = PlayableSong.from(songWithFile);
+            isBackup = false;
+        } else {
+            song = playerBackupProvider.get();
             isBackup = true;
-            songWithFile = playerBackupProvider.get();
         }
 
-        return new SongWithInfo(songWithFile, isBackup);
+        return new SongWithInfo(song, isBackup);
     }
 
     public void downloadCurrentSongOr(final SongDownloadedListener listener, final Runnable or) {
@@ -101,16 +106,16 @@ public class PlayerQueue {
     }
 
     public static class SongWithInfo {
-        private VkSongWithFile songWithFile;
+        private PlayableSong song;
         private boolean isBackup;
 
-        public SongWithInfo(VkSongWithFile songWithFile, boolean isBackup) {
-            this.songWithFile = songWithFile;
+        public SongWithInfo(PlayableSong song, boolean isBackup) {
+            this.song = song;
             this.isBackup = isBackup;
         }
 
-        public VkSongWithFile getSongWithFile() {
-            return songWithFile;
+        public PlayableSong getSong() {
+            return song;
         }
 
         public boolean isBackup() {

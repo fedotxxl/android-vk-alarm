@@ -13,10 +13,12 @@ public class PlayerFromQueue {
     private volatile MediaPlayer mp = null;
     private volatile boolean isBackupPlaying = false;
 
+    private final PlayerUtils playerUtils;
     private final PlayerQueue queue;
     private final SongStartPlayingListener songStartPlayingListener;
 
-    public PlayerFromQueue(PlayerQueue queue, SongStartPlayingListener songStartPlayingListener) {
+    public PlayerFromQueue(PlayerUtils playerUtils, PlayerQueue queue, SongStartPlayingListener songStartPlayingListener) {
+        this.playerUtils = playerUtils;
         this.queue = queue;
         this.songStartPlayingListener = songStartPlayingListener;
     }
@@ -32,7 +34,7 @@ public class PlayerFromQueue {
             @Override
             public void on(VkSongWithFile song) {
                 queue.scheduleToDownloadNextSongOrSkip();
-                play(song, false);
+                play(PlayableSong.from(song), false);
             }
         };
     }
@@ -47,20 +49,20 @@ public class PlayerFromQueue {
     }
 
     public void stop() {
-        PlayerUtils.stop(mp);
+        playerUtils.stop(mp);
         mp = null;
     }
 
-    private void play(VkSongWithFile song, boolean isBackup) {
+    private void play(PlayableSong song, boolean isBackup) {
         this.isBackupPlaying = isBackup;
-        PlayerUtils.playSong(mp, song);
+        playerUtils.playSong(mp, song);
         if (songStartPlayingListener != null) songStartPlayingListener.on(song);
     }
 
     private void playCurrentSongOrBackup() {
         PlayerQueue.SongWithInfo songWithInfo = queue.getCurrentSongOrBackup();
 
-        play(songWithInfo.getSongWithFile(), songWithInfo.isBackup());
+        play(songWithInfo.getSong(), songWithInfo.isBackup());
     }
 
     private void moveToNextSong() {

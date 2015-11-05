@@ -1,5 +1,7 @@
 package io.belov.vk.alarm.vk;
 
+import android.support.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +57,7 @@ public class VkRandomNextSongProvider implements PlayerQueue.NextSongProvider {
         onSongChangeListeners.add(listener);
     }
 
+    @Nullable
     private List<VkSong> getAllSongs() {
         vkSongManager.getAllOrCachedSongsSync(
                 new VkSongsListeners() {
@@ -67,10 +70,14 @@ public class VkRandomNextSongProvider implements PlayerQueue.NextSongProvider {
         return allSongs;
     }
 
+    @Nullable
     private VkSong getRandomSong() {
         List<VkSong> allSongs = getAllSongs();
-        int songsCount = allSongs.size();
 
-        return allSongs.get(RandomUtils.R.nextInt(songsCount));
+        if (allSongs == null) {
+            return null;
+        } else {
+            return allSongs.get(RandomUtils.R.nextInt(allSongs.size()));
+        }
     }
 }

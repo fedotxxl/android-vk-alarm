@@ -12,6 +12,7 @@ import io.belov.vk.alarm.alarm.AlarmManager;
 import io.belov.vk.alarm.alert.AlarmAlertScheduler;
 import io.belov.vk.alarm.audio.PlayerBackupProvider;
 import io.belov.vk.alarm.audio.PlayerQueue;
+import io.belov.vk.alarm.audio.PlayerUtils;
 import io.belov.vk.alarm.persistence.AlarmDaoI;
 import io.belov.vk.alarm.preferences.PreferencesManager;
 import io.belov.vk.alarm.song.SongDownloader;
@@ -102,5 +103,10 @@ public class AppModule {
     @Provides @Singleton
     public PlayerQueue.Dependencies providePlayerQueueDependencies(PreferencesManager preferencesManager, PlayerBackupProvider playerBackupProvider, SongDownloader songDownloader, SongStorage songStorage) {
         return new PlayerQueue.Dependencies(preferencesManager, playerBackupProvider, songDownloader, songStorage);
+    }
+
+    @Provides @Singleton
+    public PlayerUtils providePlayerUtils(Context context) {
+        return new PlayerUtils(context);
     }
 }
