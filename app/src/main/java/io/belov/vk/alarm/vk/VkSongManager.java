@@ -53,10 +53,14 @@ public class VkSongManager {
         return request;
     }
 
-    public VKRequest getById(int ownerId, int songId, final VkSongListener listener, final VkErrorListener errorListener) {
+    public VKRequest getByIdSync(int ownerId, int songId, final VkSongListener listener) {
+        return getByIdSync(ownerId, songId, listener, null);
+    }
+
+    public VKRequest getByIdSync(int ownerId, int songId, final VkSongListener listener, final VkErrorListener errorListener) {
         VKRequest request = VKApi.audio().getById(VKParameters.from("audios", ownerId + "_" + songId));
 
-        request.executeWithListener(new VKRequest.VKRequestListener() {
+        request.executeSyncWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
                 VkSong song = null;
@@ -68,7 +72,7 @@ public class VkSongManager {
                         song = new VkSong(jsonSong);
                     }
                 } catch (Exception e) {
-                    Log.e(TAG, "getById", e);
+                    Log.e(TAG, "getByIdSync", e);
                 }
 
                 if (song != null) {
@@ -81,7 +85,7 @@ public class VkSongManager {
             @Override
             public void onError(VKError error) {
                 Log.e(TAG, error.toString());
-                if (errorListener != null)  errorListener.on();
+                if (errorListener != null) errorListener.on();
             }
         });
 
@@ -89,13 +93,24 @@ public class VkSongManager {
     }
 
     public VKRequest getAllSongs(final VkSongsListeners listener) {
-        return getAllSongs(listener, null);
+        return getAllSongs(listener, null, false);
     }
 
-    public VKRequest getAllSongs(final VkSongsListeners listener, final VkErrorListener errorListener) {
+    public VKRequest getAllSongs(final VkSongsListeners listener, final VkErrorListener errorListener, boolean sync) {
         VKRequest request = VKApi.audio().get();
+        VKRequest.VKRequestListener requestListener = getAllSongsListener(listener, errorListener);
 
-        request.executeWithListener(new VKRequest.VKRequestListener() {
+        if (sync) {
+            request.executeSyncWithListener(requestListener);
+        } else {
+            request.executeWithListener(requestListener);
+        }
+
+        return request;
+    }
+
+    private VKRequest.VKRequestListener getAllSongsListener(final VkSongsListeners listener, final VkErrorListener errorListener) {
+        return new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
                 boolean isSuccess = false;
@@ -122,14 +137,20 @@ public class VkSongManager {
                 Log.e(TAG, error.toString());
                 if (errorListener != null) errorListener.on();
             }
-        });
+        };
+    }
 
-        return request;
+    public void getAllOrCachedSongsSync(VkSongsListeners listener) {
+        getAllOrCachedSongs(listener, true);
     }
 
     public void getAllOrCachedSongs(VkSongsListeners listener) {
+        getAllOrCachedSongs(listener, false);
+    }
+
+    private void getAllOrCachedSongs(VkSongsListeners listener, boolean sync) {
         if (songsCount < 0) {
-            getAllSongs(listener);
+            getAllSongs(listener, null, sync);
         } else {
             listener.on(songsCount, songsAllCache);
         }

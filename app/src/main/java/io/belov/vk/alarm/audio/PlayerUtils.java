@@ -2,6 +2,8 @@ package io.belov.vk.alarm.audio;
 
 import android.media.MediaPlayer;
 
+import java.io.IOException;
+
 import io.belov.vk.alarm.vk.VkSongWithFile;
 
 /**
@@ -17,7 +19,13 @@ public class PlayerUtils {
     }
 
     public static void playSong(MediaPlayer mp, VkSongWithFile song) {
-        //todo
+        try {
+            mp.setDataSource(song.getFile().getAbsolutePath());
+            mp.prepare();
+            mp.start();
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
 }

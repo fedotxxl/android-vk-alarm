@@ -1,11 +1,7 @@
 package io.belov.vk.alarm.audio;
 
-import android.util.Log;
-
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.belov.vk.alarm.vk.VkErrorListener;
 import io.belov.vk.alarm.vk.VkSong;
 import io.belov.vk.alarm.vk.VkSongListener;
 import io.belov.vk.alarm.vk.VkSongManager;
@@ -59,27 +55,13 @@ public class SingleSongProvider implements PlayerQueue.NextSongProvider {
     private VkSong getSongFromVk() {
         final AtomicReference<VkSong> answer = new AtomicReference<>();
 
-        try {
-            final CountDownLatch latch = new CountDownLatch(1);
-
-            vkSongManager.getById(ownerId, songId,
-                    new VkSongListener() {
-                        @Override
-                        public void on(VkSong song) {
-                            answer.set(song);
-                            latch.countDown();
-                        }
-                    }, new VkErrorListener() {
-                        @Override
-                        public void on() {
-                            latch.countDown();
-                        }
-                    });
-
-            latch.await();
-        } catch (InterruptedException e) {
-            Log.e(TAG, "getSongFromVk");
-        }
+        vkSongManager.getByIdSync(ownerId, songId,
+                new VkSongListener() {
+                    @Override
+                    public void on(VkSong song) {
+                        answer.set(song);
+                    }
+                });
 
         return answer.get();
     }

@@ -15,6 +15,15 @@ public class VkSong {
     private long date;
     private String url;
 
+    public VkSong(int id, int ownerId, String artist, String title, long date, String url) {
+        this.id = id;
+        this.ownerId = ownerId;
+        this.artist = artist;
+        this.title = title;
+        this.date = date;
+        this.url = url;
+    }
+
     public VkSong(JSONObject jsonSong) throws JSONException {
         fromJson(jsonSong);
     }

@@ -1,10 +1,7 @@
 package io.belov.vk.alarm.vk;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 import io.belov.vk.alarm.audio.PlayerQueue;
 import io.belov.vk.alarm.utils.RandomUtils;
@@ -59,27 +56,13 @@ public class VkRandomNextSongProvider implements PlayerQueue.NextSongProvider {
     }
 
     private List<VkSong> getAllSongs() {
-        try {
-            final CountDownLatch latch = new CountDownLatch(1);
-
-            vkSongManager.getAllSongs(
-                    new VkSongsListeners() {
-                        @Override
-                        public void on(int count, List<VkSong> songs) {
-                            allSongs = songs;
-                            latch.countDown();
-                        }
-                    }, new VkErrorListener() {
-                        @Override
-                        public void on() {
-                            latch.countDown();
-                        }
-                    });
-
-            latch.await();
-        } catch (InterruptedException e) {
-            Log.e(TAG, "getAllSongs");
-        }
+        vkSongManager.getAllOrCachedSongsSync(
+                new VkSongsListeners() {
+                    @Override
+                    public void on(int count, List<VkSong> songs) {
+                        allSongs = songs;
+                    }
+                });
 
         return allSongs;
     }
