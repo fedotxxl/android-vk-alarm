@@ -10,22 +10,21 @@ import io.belov.vk.alarm.vk.VkSongWithFile;
  */
 public class PlayerFromQueue {
 
-    private volatile MediaPlayer mp = null;
     private volatile boolean isBackupPlaying = false;
 
     private final PlayerUtils playerUtils;
     private final PlayerQueue queue;
     private final SongStartPlayingListener songStartPlayingListener;
+    private final MediaPlayerWrapper mp;
 
     public PlayerFromQueue(PlayerUtils playerUtils, PlayerQueue queue, SongStartPlayingListener songStartPlayingListener) {
         this.playerUtils = playerUtils;
         this.queue = queue;
         this.songStartPlayingListener = songStartPlayingListener;
+        this.mp = initMediaPlayer();
     }
 
     public void play() {
-        stop();
-        mp = initMediaPlayer();
         queue.downloadCurrentSongOr(getCurrentSongPlayAction(), getCurrentSongBackupAction());
     }
 
@@ -50,7 +49,6 @@ public class PlayerFromQueue {
 
     public void stop() {
         playerUtils.stop(mp);
-        mp = null;
     }
 
     private void play(PlayableSong song, boolean isBackup) {
@@ -74,7 +72,7 @@ public class PlayerFromQueue {
         }
     }
 
-    private MediaPlayer initMediaPlayer() {
+    private MediaPlayerWrapper initMediaPlayer() {
         MediaPlayer answer = new MediaPlayer();
 
         answer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -85,6 +83,6 @@ public class PlayerFromQueue {
             }
         });
 
-        return answer;
+        return new MediaPlayerWrapper(answer);
     }
 }

@@ -58,7 +58,7 @@ public class IoUtils {
             public void run() {
                 File file = IoUtils.download(fileUrl, fileTo);
 
-                if (isEmpty(file)) {
+                if (isExists(file)) {
                     if (listener != null) listener.on(fileUrl, file);
                 }
             }

@@ -20,33 +20,12 @@ public class PlayerUtils {
         this.context = context;
     }
 
-    public void stop(MediaPlayer mp) {
-        if (mp != null) {
-            mp.stop();
-            mp.release();
-        }
+    public void stop(MediaPlayerWrapper mpw) {
+        mpw.stop();
     }
 
-    public void playSong(MediaPlayer mp, PlayableSong song) {
-        try {
-            boolean hasDataSource = true;
-
-            if (song.hasFile()) {
-                mp.setDataSource(song.getFile().getAbsolutePath());
-            } else if (song.hasUri()) {
-                mp.setDataSource(context, song.getUri());
-            } else {
-                hasDataSource = false;
-            }
-
-            if (hasDataSource) {
-                mp.prepare();
-                mp.start();
-            }
-
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
+    public void playSong(MediaPlayerWrapper mpw, PlayableSong song) {
+        mpw.playSong(context, song);
     }
 
 }
