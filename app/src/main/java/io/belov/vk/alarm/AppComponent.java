@@ -10,6 +10,8 @@ import io.belov.vk.alarm.ui.AlarmListActivity;
 import javax.inject.Singleton;
 
 import dagger.Component;
+import io.belov.vk.alarm.ui.LoginActivity;
+import io.belov.vk.alarm.user.UserLoginLogoutProcessor;
 
 @Singleton
 @Component(
@@ -23,5 +25,7 @@ public interface AppComponent {
     void inject(AlarmListActivity activity);
     void inject(AlarmAlertActivity activity);
     void inject(AlarmEditActivity activity);
+    void inject(LoginActivity activity);
     AlarmManager provideAlarmManager();
+    UserLoginLogoutProcessor provideUserLoginLogoutProcessor();
 }

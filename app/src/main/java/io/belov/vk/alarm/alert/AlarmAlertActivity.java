@@ -4,15 +4,15 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.io.File;
 import java.util.Date;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.inject.Inject;
 
@@ -30,18 +30,20 @@ import io.belov.vk.alarm.audio.SingleSongProvider;
 import io.belov.vk.alarm.audio.SongStartPlayingListener;
 import io.belov.vk.alarm.preferences.PreferencesManager;
 import io.belov.vk.alarm.ui.BaseActivity;
+import io.belov.vk.alarm.user.UserAvatarStorage;
 import io.belov.vk.alarm.user.UserManager;
+import io.belov.vk.alarm.utils.AndroidUtils;
+import io.belov.vk.alarm.utils.IoUtils;
 import io.belov.vk.alarm.utils.TimeUtils;
 import io.belov.vk.alarm.vk.VkRandomNextSongProvider;
-import io.belov.vk.alarm.vk.VkSong;
-import io.belov.vk.alarm.vk.VkSongListener;
 import io.belov.vk.alarm.vk.VkSongManager;
-import io.belov.vk.alarm.vk.VkSongWithFile;
 
 /**
  * Created by fbelov on 19.10.15.
  */
 public class AlarmAlertActivity extends BaseActivity {
+
+    private static final String TAG = "AlarmAlertActivity";
 
     private AlarmAlert alarmAlert;
     private PlayerFromQueue player;
@@ -75,6 +77,8 @@ public class AlarmAlertActivity extends BaseActivity {
     PlayerQueue.Dependencies playerQueueDependencies;
     @Inject
     PlayerUtils playerUtils;
+    @Inject
+    UserAvatarStorage avatarStorage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +105,7 @@ public class AlarmAlertActivity extends BaseActivity {
 
         updateTime();
         setupProfile();
+        setupAvatar();
         setupThread();
         startAlarm();
     }
@@ -204,6 +209,18 @@ public class AlarmAlertActivity extends BaseActivity {
                 increaseProgressValue(progressValuePlus);
             }
         });
+    }
+
+    private void setupAvatar() {
+        try {
+            File avatar = avatarStorage.get(UserAvatarStorage.CURRENT_USER_ID);
+
+            if (!IoUtils.isEmpty(avatar)) {
+                circleProfileImage.setImageBitmap(AndroidUtils.bitmapFromFile(avatar));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "setupAvatar", e);
+        }
     }
 
     private void updateTime() {

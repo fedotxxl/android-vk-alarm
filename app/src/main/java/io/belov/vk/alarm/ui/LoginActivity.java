@@ -8,21 +8,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.squareup.otto.Bus;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKCallback;
 import com.vk.sdk.VKScope;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKError;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.belov.vk.alarm.R;
+import io.belov.vk.alarm.bus.VkLoginEvent;
 import io.belov.vk.alarm.utils.ActivityUtils;
 
 /**
  * Created by fbelov on 19.10.15.
  */
-public class LoginActivity extends FragmentActivity {
+public class LoginActivity extends BaseFragmentActivity {
 
     /**
      * Scope is set of required permissions for your application
@@ -33,9 +37,13 @@ public class LoginActivity extends FragmentActivity {
             VKScope.AUDIO
     };
 
+    @Inject
+    Bus bus;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        appComponent().inject(this);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
     }
@@ -61,6 +69,8 @@ public class LoginActivity extends FragmentActivity {
         VKCallback<VKAccessToken> callback = new VKCallback<VKAccessToken>() {
             @Override
             public void onResult(VKAccessToken res) {
+                bus.post(new VkLoginEvent(res));
+
                 // User passed Authorization
                 ActivityUtils.openAlarmsListActivity(activity);
             }

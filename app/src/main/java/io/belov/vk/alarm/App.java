@@ -41,5 +41,9 @@ public class App extends Application {
         super.onCreate();
         vkAccessTokenTracker.startTracking();
         VKSdk.initialize(this);
+
+        AppComponent appComponent = getAppComponent();
+
+        appComponent.provideUserLoginLogoutProcessor().bootstrap();
     }
 }

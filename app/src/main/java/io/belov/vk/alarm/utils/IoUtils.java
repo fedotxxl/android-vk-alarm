@@ -16,6 +16,8 @@ import java.net.URLConnection;
  */
 public class IoUtils {
 
+    public static String TAG = "IoUtils";
+
     @Nullable
     public static File download(String fileUrl, File fileTo) {
         int count;
@@ -41,22 +43,38 @@ public class IoUtils {
             output.close();
             input.close();
         } catch (Exception e) {
-            Log.e("Error: ", e.getMessage());
+            Log.e(TAG, "Error: " + e.toString());
         }
+
         return null;
     }
+    public static void downloadAsync(String fileUrl, File fileTo) {
+        downloadAsync(fileUrl, fileTo, null);
+    }
 
-    public static void downloadAsync(final String fileUrl, final File fileTo, final FileDownloadedListener listener) {
+    public static void downloadAsync(final String fileUrl, final File fileTo, @Nullable final FileDownloadedListener listener) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 File file = IoUtils.download(fileUrl, fileTo);
 
-                if (file != null && file.exists()) {
-                    listener.on(fileUrl, file);
+                if (isEmpty(file)) {
+                    if (listener != null) listener.on(fileUrl, file);
                 }
             }
         }).start();
+    }
+
+    public static boolean isExists(File file) {
+        return file != null && file.exists();
+    }
+
+    public static boolean isEmpty(File file) {
+        return !isExists(file) || file.length() == 0;
+    }
+
+    public static boolean isNotEmpty(File file) {
+        return !isEmpty(file);
     }
 
     public interface FileDownloadedListener {

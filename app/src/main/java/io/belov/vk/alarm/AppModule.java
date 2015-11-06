@@ -19,8 +19,10 @@ import io.belov.vk.alarm.song.SongDownloader;
 import io.belov.vk.alarm.song.SongStorage;
 import io.belov.vk.alarm.storage.SongsCache;
 import io.belov.vk.alarm.storage.SongsCacheI;
+import io.belov.vk.alarm.user.UserAvatarStorage;
 import io.belov.vk.alarm.user.UserDao;
 import io.belov.vk.alarm.user.UserDaoI;
+import io.belov.vk.alarm.user.UserLoginLogoutProcessor;
 import io.belov.vk.alarm.user.UserManager;
 import io.belov.vk.alarm.utils.FileDownloader;
 import io.belov.vk.alarm.vk.VkManager;
@@ -68,6 +70,16 @@ public class AppModule {
     @Provides @Singleton
     public UserManager provideUserManager(UserDaoI dao, VkManager vkManager, Bus bus) {
         return new UserManager(dao, vkManager, bus);
+    }
+
+    @Provides @Singleton
+    public UserAvatarStorage provideUserAvatarStorage(Context context) {
+        return new UserAvatarStorage(context);
+    }
+
+    @Provides @Singleton
+    public UserLoginLogoutProcessor provideUserLogoutProcessor(Bus bus, AlarmManager alarmManager, UserAvatarStorage avatarStorage, SongsCacheI songsCache, VkManager vkManager) {
+        return new UserLoginLogoutProcessor(bus, alarmManager, avatarStorage, songsCache, vkManager);
     }
 
     @Provides @Singleton
