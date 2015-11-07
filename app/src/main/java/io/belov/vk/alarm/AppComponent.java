@@ -4,6 +4,8 @@ import io.belov.vk.alarm.alarm.AlarmManager;
 import io.belov.vk.alarm.alert.AlarmAlertActivity;
 import io.belov.vk.alarm.bus.BusModule;
 import io.belov.vk.alarm.persistence.PersistenceModule;
+import io.belov.vk.alarm.preferences.PreferencesActivity;
+import io.belov.vk.alarm.preferences.PreferencesManager;
 import io.belov.vk.alarm.ui.AlarmEditActivity;
 import io.belov.vk.alarm.ui.AlarmListActivity;
 
@@ -26,6 +28,7 @@ public interface AppComponent {
     void inject(AlarmAlertActivity activity);
     void inject(AlarmEditActivity activity);
     void inject(LoginActivity activity);
+    void inject(PreferencesActivity.MyPreferenceFragment activity);
     AlarmManager provideAlarmManager();
     UserLoginLogoutProcessor provideUserLoginLogoutProcessor();
 }

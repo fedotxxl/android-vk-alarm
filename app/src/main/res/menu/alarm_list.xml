@@ -20,8 +20,8 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/action_help"
-        android:title="@string/help"
+        android:id="@+id/action_preferences"
+        android:title="@string/preferences"
         app:showAsAction="never"/>
 
     <item

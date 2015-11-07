@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 
 import io.belov.vk.alarm.alarm.Alarm;
+import io.belov.vk.alarm.preferences.PreferencesActivity;
 import io.belov.vk.alarm.ui.AlarmEditActivity;
 import io.belov.vk.alarm.ui.AlarmListActivity;
 import io.belov.vk.alarm.ui.LoginActivity;
@@ -37,5 +38,9 @@ public class ActivityUtils {
 
     private static void disableAnimation(Activity activity) {
         activity.overridePendingTransition(0, 0);
+    }
+
+    public static void openPreferences(Activity activity) {
+        activity.startActivity(new Intent(activity, PreferencesActivity.class));
     }
 }

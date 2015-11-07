@@ -83,8 +83,8 @@ public class AppModule {
     }
 
     @Provides @Singleton
-    public PreferencesManager providePreferencesManager() {
-        return new PreferencesManager();
+    public PreferencesManager providePreferencesManager(Context context) {
+        return new PreferencesManager(context);
     }
 
     @Provides @Singleton
@@ -111,7 +111,7 @@ public class AppModule {
     public SongStorage provideSongStorage(SongsCacheI songsCache) {
         return new SongStorage(songsCache);
     }
-    
+
     @Provides @Singleton
     public PlayerQueue.Dependencies providePlayerQueueDependencies(PreferencesManager preferencesManager, PlayerBackupProvider playerBackupProvider, SongDownloader songDownloader, SongStorage songStorage) {
         return new PlayerQueue.Dependencies(preferencesManager, playerBackupProvider, songDownloader, songStorage);

@@ -1,0 +1,11 @@
+<resources>
+    <string-array name="prefDownloadTypeValues">
+        <item>@string/pref_download_connection_wifi_only</item>
+        <item>@string/pref_download_connection_any</item>
+    </string-array>
+
+    <string-array name="prefDownloadTypeKeys">
+        <item>wifi_only</item>
+        <item>any</item>
+    </string-array>
+</resources>

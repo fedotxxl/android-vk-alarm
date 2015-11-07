@@ -35,6 +35,7 @@ import io.belov.vk.alarm.bus.AlarmToggleEnabledEvent;
 import io.belov.vk.alarm.alarm.Alarm;
 import io.belov.vk.alarm.bus.AlarmUpdatedEvent;
 import io.belov.vk.alarm.utils.ActivityUtils;
+import io.belov.vk.alarm.utils.AndroidUtils;
 import io.belov.vk.alarm.utils.IntentUtils;
 import io.belov.vk.alarm.user.UserManager;
 
@@ -105,8 +106,8 @@ public class AlarmListActivity extends BaseAppCompatActivity {
             case R.id.action_attributions:
                 IntentUtils.openUri(this, "https://github.com/rakuishi/Alarm-Android/blob/master/ATTRIBUTIONS.md");
                 break;
-            case R.id.action_help:
-                IntentUtils.openUri(this, "https://github.com/rakuishi/Alarm-Android/issues");
+            case R.id.action_preferences:
+                ActivityUtils.openPreferences(this);
                 break;
             case R.id.action_logout:
                 tryLogout();

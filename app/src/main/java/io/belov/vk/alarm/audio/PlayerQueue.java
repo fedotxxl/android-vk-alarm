@@ -1,6 +1,5 @@
 package io.belov.vk.alarm.audio;
 
-import io.belov.vk.alarm.preferences.PlayerPreferences;
 import io.belov.vk.alarm.preferences.PreferencesManager;
 import io.belov.vk.alarm.song.SongDownloadedListener;
 import io.belov.vk.alarm.song.SongDownloader;
@@ -18,20 +17,17 @@ public class PlayerQueue {
     private String TAG = "PlayerQueue";
 
     private NextSongProvider nextSongProvider;
+    private PreferencesManager preferencesManager;
     private PlayerBackupProvider playerBackupProvider;
     private SongDownloader songDownloader;
     private SongStorage songStorage;
-    private FileDownloadPreferences fileDownloadPreferences;
-    private long maxDownloadDelayInMillis;
 
     public PlayerQueue(Dependencies dependencies, NextSongProvider nextSongProvider) {
-        this(dependencies.getPreferencesManager().getPlayerPreferences(), nextSongProvider, dependencies.playerBackupProvider, dependencies.songStorage, dependencies.songDownloader);
+        this(dependencies.getPreferencesManager(), nextSongProvider, dependencies.playerBackupProvider, dependencies.songStorage, dependencies.songDownloader);
     }
 
-    public PlayerQueue(PlayerPreferences playerPreferences, NextSongProvider nextSongProvider, PlayerBackupProvider playerBackupProvider, SongStorage songStorage, SongDownloader songDownloader) {
-        this.maxDownloadDelayInMillis = playerPreferences.getBackupDelayInMillis();
-        this.fileDownloadPreferences = playerPreferences.getFileDownloadPreferences();
-
+    public PlayerQueue(PreferencesManager preferencesManager, NextSongProvider nextSongProvider, PlayerBackupProvider playerBackupProvider, SongStorage songStorage, SongDownloader songDownloader) {
+        this.preferencesManager = preferencesManager;
         this.nextSongProvider = nextSongProvider;
         this.playerBackupProvider = playerBackupProvider;
         this.songStorage = songStorage;
@@ -65,7 +61,7 @@ public class PlayerQueue {
             if (song == null) {
                 or.run();
             } else {
-                songDownloader.downloadAndCache(song, SongsCacheI.Importance.SMALL, listener, or, fileDownloadPreferences, maxDownloadDelayInMillis);
+                songDownloader.downloadAndCache(song, SongsCacheI.Importance.SMALL, listener, or, getFileDownloadPreferences(), getMaxDownloadDelayInMillis());
             }
     }
 
@@ -73,7 +69,7 @@ public class PlayerQueue {
         VkSong nextSong = nextSongProvider.getNext();
 
         if (nextSong != null) {
-            songDownloader.downloadAndCache(nextSong, SongsCacheI.Importance.SMALL, fileDownloadPreferences);
+            songDownloader.downloadAndCache(nextSong, SongsCacheI.Importance.SMALL, getFileDownloadPreferences());
         }
     }
 
@@ -89,6 +85,14 @@ public class PlayerQueue {
         } else {
             return songStorage.get(song);
         }
+    }
+
+    private FileDownloadPreferences getFileDownloadPreferences() {
+        return preferencesManager.get().getPlayerFileDownloadPreferences();
+    }
+
+    private long getMaxDownloadDelayInMillis() {
+        return preferencesManager.get().getPlayerBackupDelayInSeconds() * 1000;
     }
 
     public interface NextSongProvider {

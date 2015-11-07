@@ -12,6 +12,7 @@
     <string name="logout">Logout</string>
     <string name="help">Help &amp; Feedback</string>
     <string name="attributions">Attributions</string>
+    <string name="preferences">Preferences</string>
 
     <string name="delete">Delete</string>
     <string name="done">Done</string>
@@ -54,4 +55,16 @@
     <string name="songs_select_dialog_filter_hint">Filter songs...</string>
 
     <string name="logout_dialog_message">All your alarms will be deleted. Are you sure you want to logout?</string>
+
+    <string name="pref_alert_play_category">Alarm play settings</string>
+
+    <string name="pref_download_category">Song download settings</string>
+    <string name="pref_download_connection_title">Download Details</string>
+    <string name="pref_download_connection_summary">Specify connection type to download files</string>
+    <string name="pref_download_connection_wifi_only">Wifi only</string>
+    <string name="pref_download_connection_any">Any connection</string>
+    <string name="pref_download_backup_delay_title">Download backup delay</string>
+    <string name="pref_download_backup_delay_summary">Wait max seconds to play backup sound</string>
+    <string name="pref_max_song_duration_title">Max song duration</string>
+    <string name="pref_max_song_duration_summary">Limit song duration to specified seconds</string>
 </resources>

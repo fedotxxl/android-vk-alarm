@@ -28,6 +28,10 @@ public class AndroidUtils {
         return BitmapFactory.decodeFile(file.getAbsolutePath(), options);
     }
 
+    public static String getString(Context context, int id) {
+        return context.getResources().getString(id);
+    }
+
     public static class ConnectionInfo {
 
         private boolean isWifi;

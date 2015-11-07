@@ -34,10 +34,6 @@ public class SongDownloader {
         this.fileDownloader = fileDownloader;
     }
 
-    public void downloadAndCache(VkSong song, final SongsCacheI.Importance importance, final SongDownloadedListener songDownloadSuccessListener) {
-        downloadAndCache(song, importance, songDownloadSuccessListener, null, FileDownloadPreferences.ALWAYS, -1);
-    }
-
     public void downloadAndCache(VkSong song, SongsCacheI.Importance importance, FileDownloadPreferences fileDownloadPreferences) {
         downloadAndCache(song, importance, null, null, fileDownloadPreferences, -1);
     }

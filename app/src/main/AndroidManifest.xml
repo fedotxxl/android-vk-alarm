@@ -81,6 +81,10 @@
             android:autoRemoveFromRecents="true">
         </activity>
 
+        <activity
+            android:name=".preferences.PreferencesActivity"
+            android:label="@string/preferences" />
+
         <receiver android:name="io.belov.vk.alarm.alert.AlarmAlertBroadcastReceiver" />
 
         <receiver android:name="io.belov.vk.alarm.alert.AlarmAlertBootReceiver">

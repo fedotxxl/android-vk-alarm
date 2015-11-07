@@ -1,19 +1,19 @@
 package io.belov.vk.alarm.utils;
 
+import io.belov.vk.alarm.audio.PlayerConnectionType;
+
 /**
  * Created by fbelov on 01.11.15.
  */
 public class FileDownloadPreferences {
 
-    public static final FileDownloadPreferences ALWAYS = new FileDownloadPreferences(false);
+    private PlayerConnectionType playerConnectionType;
 
-    private boolean downloadByWifiOnly;
-
-    public FileDownloadPreferences(boolean downloadByWifiOnly) {
-        this.downloadByWifiOnly = downloadByWifiOnly;
+    public FileDownloadPreferences(PlayerConnectionType playerConnectionType) {
+        this.playerConnectionType = playerConnectionType;
     }
 
     public boolean isDownloadByWifiOnly() {
-        return downloadByWifiOnly;
+        return playerConnectionType == PlayerConnectionType.WIFI_ONLY;
     }
 }

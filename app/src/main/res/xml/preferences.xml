@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/pref_alert_play_category">
+        <io.belov.vk.alarm.ui.IntEditTextPreference
+            android:inputType="number"
+            android:key="maxSongDurationInSeconds"
+            android:title="@string/pref_max_song_duration_title" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_download_category">
+        <io.belov.vk.alarm.ui.IntEditTextPreference
+            android:inputType="number"
+            android:key="playerBackupDelayInSeconds"
+            android:title="@string/pref_download_backup_delay_title" />
+        <ListPreference
+            android:entries="@array/prefDownloadTypeValues"
+            android:entryValues="@array/prefDownloadTypeKeys"
+            android:key="playerConnectionType"
+            android:title="@string/pref_download_connection_title" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
